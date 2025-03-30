@@ -24,4 +24,5 @@ export class RightSidePanelComponent{
   logout() {
     this.authService.logout();
   }
+  
 }

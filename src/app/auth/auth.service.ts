@@ -2,85 +2,93 @@ import { Injectable } from '@angular/core';
 import { Auth, User, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment'; // ✅ Import environment
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private userSubject = new BehaviorSubject<User | null>(null); // Store user state
+  private userSubject = new BehaviorSubject<User | null>(null);
+  private loadingSubject = new BehaviorSubject<boolean>(false); // Add loading state
 
   constructor(private auth: Auth, private router: Router) {
     // Listen for authentication state changes
     onAuthStateChanged(this.auth, (user) => {
-      this.userSubject.next(user); // Update the user state
-      if (user) {
-        console.log("User is logged in:", user.email);
-      } else {
-        console.log("User is logged out.");
-      }
+      this.userSubject.next(user);
     });
   }
 
-  // Get current user as Observable
+  // ✅ Get current user as Observable
   getCurrentUser(): Observable<User | null> {
     return this.userSubject.asObservable();
   }
 
-  // Handle login for both email/password and Google Sign-in
-  loginWithCredentials(email: string, password: string) {
-    if (!email || !password) {
-      return Promise.reject('Please enter both email and password.');
-    }
+  // ✅ Get current user ID (optimized version)
+  async getCurrentUserId(): Promise<string | null> {
+    const currentUser = this.userSubject.value;
+    return currentUser ? currentUser.uid : null;
+  }
 
+  // ✅ Email/Password Login
+  loginWithCredentials(email: string, password: string): Promise<User> {
+    this.loadingSubject.next(true); // Start loading
     return signInWithEmailAndPassword(this.auth, email.trim(), password.trim())
-      .then((userCredential) => {
-        console.log("Email login successful!", userCredential);
+      .then(userCredential => {
+        this.loadingSubject.next(false); // Stop loading
         return userCredential.user;
       })
       .catch(error => {
-        console.error("Login error:", error);
+        this.loadingSubject.next(false); // Stop loading
         throw this.handleAuthError(error);
       });
   }
 
-  // Google Sign-In
-  googleSignIn() {
+  // ✅ Google Sign-In
+  googleSignIn(): Promise<User> {
+    this.loadingSubject.next(true); // Start loading
     const provider = new GoogleAuthProvider();
     return signInWithPopup(this.auth, provider)
-      .then((result) => {
-        console.log("Google login successful!", result);
+      .then(result => {
+        this.loadingSubject.next(false); // Stop loading
         return result.user;
       })
       .catch(error => {
-        console.error("Google Sign-in error:", error);
+        this.loadingSubject.next(false); // Stop loading
         throw this.handleAuthError(error);
       });
   }
 
-  // Handle authentication error messages
-  private handleAuthError(error: any): string {
-    let errorMessage = "Authentication failed. Please try again.";
-    switch (error.code) {
-      case 'auth/invalid-credential':
-        errorMessage = "Invalid email or password. Please check your credentials.";
-        break;
-      case 'auth/user-not-found':
-        errorMessage = "No account found with this email.";
-        break;
-      case 'auth/wrong-password':
-        errorMessage = "Incorrect password. Try again.";
-        break;
-      default:
-        errorMessage = error.message || errorMessage;
-    }
-    return errorMessage;
+  // ✅ Logout
+  logout(): Promise<void> {
+    this.loadingSubject.next(true); // Start loading
+    return signOut(this.auth)
+      .then(() => {
+        this.loadingSubject.next(false); // Stop loading
+        this.router.navigate(['/auth/login']);
+      })
+      .catch(error => {
+        this.loadingSubject.next(false); // Stop loading
+        throw this.handleAuthError(error);
+      });
   }
 
-  // Logout
-  logout() {
-    return signOut(this.auth).then(() => {
-      console.log("User logged out.");
-      this.router.navigate(['/auth/login']);
-    });
+  // ✅ Handle authentication error messages
+  private handleAuthError(error: any): string {
+    switch (error.code) {
+      case 'auth/invalid-credential': return "Invalid email or password.";
+      case 'auth/user-not-found': return "No account found with this email.";
+      case 'auth/wrong-password': return "Incorrect password.";
+      default: return error.message || "Authentication failed.";
+    }
+  }
+
+  // ✅ Securely get Admin Email from environment
+  getAdminEmail(): string {
+    return environment.adminEmail;
+  }
+
+  // ✅ Get loading state as Observable
+  getLoadingState(): Observable<boolean> {
+    return this.loadingSubject.asObservable();
   }
 }

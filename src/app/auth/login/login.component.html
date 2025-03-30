@@ -1,58 +1,57 @@
 <div class="flex min-h-screen">
+  <!-- Left Side - Background Image Section -->
+  <div
+    class="relative flex flex-col items-center justify-center p-12 text-center text-white bg-cover bg-center w-5/6 hidden md:flex"
+    style="background-image: url('assets/images/tax bg.jpg');">
+  </div>
 
-
-<div class=" relative flex flex-col items-center justify-center p-12 text-center text-white bg-cover bg-center w-11/12"
-     style="background-image: url('assets/images/authentication-darkmode.png');">
-
-  <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-
-  <div class="relative z-10 max-w-md">
-    <!-- Title -->
-    <h2 class="text-5xl font-extrabold mb-6 text-white drop-shadow-lg">
-      User Management System
+  <!-- Right Side - Login Form -->
+  <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-12 bg-slate-100 shadow-lg">
+    <h2 class="text-5xl font-extrabold mb-6 text-yellow-600 drop-shadow-lg text-center">
+      Tax Management System
     </h2>
 
-    <p class="text-lg text-purple-200 leading-relaxed mb-6 text-start">
-      A secure and scalable system to manage users, authenticate access,
-      and control roles efficiently. Designed for businesses and teams
-      that value simplicity and security.
+    <p class="text-lg text-gray-700 leading-relaxed mb-6 text-center">
+      A powerful and secure tax management system designed to simplify tax filing,
+      ensure compliance, and streamline financial processes.
     </p>
 
-  </div>
-</div>
-
-
-
-
-
-  <div class="w-1/2 flex flex-col justify-center items-center p-12 ">
-    <h2 class="text-3xl font-bold mb-6">Welcome back</h2>
+    <h2 class="text-3xl font-bold mb-6">Welcome Back</h2>
     <p class="text-gray-600 mb-6">Please enter your details</p>
 
+    <!-- Email Input -->
     <input type="email" [(ngModel)]="email" placeholder="Email address"
-      class="border p-3 w-full rounded-lg mb-4" />
+      class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500" />
 
+    <!-- Password Input -->
     <input type="password" [(ngModel)]="password" placeholder="Password"
-      class="border p-3 w-full rounded-lg mb-4" />
+      class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500" />
 
-    <div class="flex justify-between w-full text-sm text-gray-500 mb-4">
-      <label>
-      </label>
-      <a href="https://myaccount.google.com/intro/signinoptions/password" class="text-purple-600">Forgot password?</a>
-    </div>
+    <div *ngIf="loading" class="spinner">Loading...</div>
 
-    <button (click)="login()" class="bg-purple-600 text-white p-3 w-60 rounded-lg">Sign in</button>
+    <!-- Login Form Submit Button -->
+    <button (click)="login()"
+      class="bg-purple-600 hover:bg-purple-700 transition-all text-white p-3 w-60 rounded-lg"
+      [disabled]="loading">
+      Sign In
+    </button>
 
-    <div class="mt-4">
-      <button (click)="loginWithGoogle()" class="border flex items-center justify-center p-3 w-full rounded-lg">
+    <!-- Google Sign-In Button -->
+    <div class="mt-4 w-full">
+      <button (click)="loginWithGoogle()"
+        class="border flex items-center justify-center p-3 w-full rounded-lg hover:bg-gray-200 transition-all"
+        [disabled]="loading">
         <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 mr-2" alt="Google"> Sign in with Google
       </button>
     </div>
 
     <p class="text-sm text-gray-500 mt-4 cursor-pointer">
-      Don't have an account? <a (click)="loginWithGoogle()"class="text-purple-600 ">Sign up</a>
+      Don't have an account? <a (click)="loginWithGoogle()" class="text-purple-600 hover:underline">Sign up</a>
     </p>
+
+    <!-- Forgot Password Link -->
+    <div class="flex justify-between w-full text-sm text-gray-500 mb-4">
+      <a href="https://myaccount.google.com/intro/signinoptions/password" class="text-purple-600 hover:underline">Forgot password?</a>
+    </div>
   </div>
-
-
 </div>

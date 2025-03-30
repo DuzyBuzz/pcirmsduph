@@ -7,5 +7,10 @@ import { Component } from '@angular/core';
   styleUrl: './left-side-panel.component.scss'
 })
 export class LeftSidePanelComponent {
+  mobileMenuOpen = false;
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
 
 }

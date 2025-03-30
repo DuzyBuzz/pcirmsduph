@@ -1,11 +1,12 @@
 export const environment = {
   production: false,
   firebaseConfig: {
-    apiKey: "AIzaSyDjylnK73_GzW1a1JKNWTYxJwB8e1YKHbQ",
-    authDomain: "user-management-system-e03ce.firebaseapp.com",
-    projectId: "user-management-system-e03ce",
-    storageBucket: "user-management-system-e03ce.firebasestorage.app",
-    messagingSenderId: "721725039781",
-    appId: "1:721725039781:web:8face8f9367bed3848d94c",
-  }
+    projectId: "tax-management-system-3ade2",
+    appId: "1:6704376857:web:20705dc6d171d9aae9ce88",
+    storageBucket: "tax-management-system-3ade2.firebasestorage.app",
+    apiKey: "AIzaSyDXvZDRYSmZiEkWGt6ZmJ7ebmkQH17UUnk",
+    authDomain: "tax-management-system-3ade2.firebaseapp.com",
+    messagingSenderId: "6704376857"
+  },
+    adminEmail: 'taxmanagementsystem14344@gmail.com'
 };
