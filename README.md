@@ -1,5 +1,3 @@
-Great! Here's the updated `README.md` based on your GitHub repository (`https://github.com/DuzyBuzz/Tax-Management-System`).
-
 ### **README.md**
 
 ```markdown
