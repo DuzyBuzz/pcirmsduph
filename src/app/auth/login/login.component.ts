@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Auth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
@@ -15,7 +17,7 @@ export class LoginComponent {
   password = '';
   loading = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private auth: Auth) {}
 
   login() {
     if (!this.email || !this.password) {
@@ -27,7 +29,7 @@ export class LoginComponent {
     this.authService.loginWithCredentials(this.email, this.password)
       .then(user => {
         this.loading = false;
-        this.redirectUser(user.email); // ✅ Redirect user after successful login
+        this.redirectUser(user.email);
       })
       .catch(errorMessage => {
         this.loading = false;
@@ -40,7 +42,7 @@ export class LoginComponent {
     this.authService.googleSignIn()
       .then(user => {
         this.loading = false;
-        this.redirectUser(user.email); // ✅ Redirect user after successful login
+        this.redirectUser(user.email);
       })
       .catch(errorMessage => {
         this.loading = false;
@@ -48,12 +50,16 @@ export class LoginComponent {
       });
   }
 
+  async loginWithFacebook() {
+    window.alert('Facebook login feature is unavalable right now. Please try again next year.');
+  }
+
   private redirectUser(email: string | null) {
     if (!email) return;
     if (email === this.authService.getAdminEmail()) {
-      this.router.navigate(['/admin']);  // ✅ Redirect to admin
+      this.router.navigate(['/admin']);
     } else {
-      this.router.navigate(['/users']);  // ✅ Redirect to normal user page
+      this.router.navigate(['/users']);
     }
   }
 }

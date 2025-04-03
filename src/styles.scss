@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.container {
-  max-width: 1200px;
-}
 
 .card {
   background-color: #fff;
@@ -13,15 +10,16 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .container {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: auto;
 }
 
 .shadow-lg {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
 
+
+.spacing-container {
+  padding-top: 2rem; /* Adjust as needed */
+  padding-bottom: 2rem; /* Adjust as needed */
+}

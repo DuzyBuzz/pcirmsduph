@@ -1,12 +1,12 @@
 export const environment = {
   production: false,
+  adminEmail: 'prenatalimmunization@gmail.com',
   firebaseConfig: {
-    projectId: "tax-management-system-3ade2",
-    appId: "1:6704376857:web:20705dc6d171d9aae9ce88",
-    storageBucket: "tax-management-system-3ade2.firebasestorage.app",
-    apiKey: "AIzaSyDXvZDRYSmZiEkWGt6ZmJ7ebmkQH17UUnk",
-    authDomain: "tax-management-system-3ade2.firebaseapp.com",
-    messagingSenderId: "6704376857"
-  },
-    adminEmail: 'taxmanagementsystem14344@gmail.com'
+    apiKey: 'AIzaSyCBsW0jz-bZ91ClmueNXBtkd1XmF18NIM0',
+    authDomain: 'prenatal-and-immunization.firebaseapp.com',
+    projectId: 'prenatal-and-immunization',
+    storageBucket: 'prenatal-and-immunization.appspot.com',
+    messagingSenderId: '276896027954',
+    appId: '1:276896027954:web:6eb1844e5ad0778b3f332b',
+  }
 };

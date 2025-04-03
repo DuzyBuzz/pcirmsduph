@@ -1,13 +1,14 @@
-import { Routes } from '@angular/router';
+import {  Routes } from '@angular/router';
 import { UsersComponent } from './users.component';
-import { DashboardComponent } from '../pages/dashboard/dashboard.component';
-import { TaxFilingComponent } from '../pages/tax-filing/tax-filing.component';
+import { AppointmentsComponent } from '../pages/appointments/appointments.component';
+import { ChildrenComponent } from '../pages/children/children.component';
+import { RegisterChildrenComponent } from '../pages/register-children/register-children.component';
 
 
 export const usersRoutes: Routes = [
   { path: '', component: UsersComponent, children: [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-    { path: 'dashboard', component: DashboardComponent},
-    { path: 'tax-filing', component: TaxFilingComponent}
+    { path: '', redirectTo: 'appointments', pathMatch: 'full' },
+    { path: 'appointments', component: AppointmentsComponent },
+    { path: 'children', component: ChildrenComponent }
   ]}
 ];

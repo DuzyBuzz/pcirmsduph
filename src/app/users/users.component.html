@@ -1,17 +1,17 @@
 <div class="grid grid-cols-[auto_1fr_auto] min-h-screen w-full">
   <!-- Left Side Panel -->
-  <div class="w-60 bg-white shadow-lg h-screen fixed left-0 top-0 p-6">
     <app-left-side-panel></app-left-side-panel>
+
+  <!-- Main Content -->
+  <div class="flex-grow flex w-fit flex-col items-center justify-start px-6 pt-6 ml-64 mr-40">
+    <router-outlet></router-outlet>
   </div>
-
-
-<router-outlet></router-outlet>
 
   <!-- Right Side Panel -->
-  <div class="fixed top-0 right-0 h-full w-40 p-3">
     <app-right-side-panel></app-right-side-panel>
-  </div>
 </div>
 
 <!-- Footer -->
-<app-footer></app-footer>
+<div class="w-full mt-auto">
+  <app-footer></app-footer>
+</div>

@@ -1,0 +1,169 @@
+<div class="p-6 w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md relative">
+    <!-- Button to Open Modal -->
+    <button (click)="openModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md mb-4">
+      Add Child
+    </button>
+  
+<!-- Modal Form for Adding/Editing Child -->
+<div *ngIf="isModalOpen" class="fixed inset-0 h-full bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">
+    <div class="bg-white rounded-lg w-full max-w-4xl p-6 overflow-hidden spacing-container">
+        <div class="spacing-container">
+            <div class="pt-20 pb-20">
+      <!-- Modal Title -->
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Add/Update Child Information</h2>
+      
+      <!-- Form for Adding/Editing Child -->
+      <form (ngSubmit)="saveChild()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Child's Name -->
+          <div class="mb-4">
+            <label for="childName" class="block text-gray-700">Child's Name</label>
+            <input [(ngModel)]="childForm.childName" name="childName" id="childName" required class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Mother's Name -->
+          <div class="mb-4">
+            <label for="motherName" class="block text-gray-700">Mother's Name</label>
+            <input [(ngModel)]="childForm.motherName" name="motherName" id="motherName" required class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Mother's Education -->
+          <div class="mb-4">
+            <label for="motherEducation" class="block text-gray-700">Mother's Education</label>
+            <input [(ngModel)]="childForm.motherEducation" name="motherEducation" id="motherEducation" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Mother's Occupation -->
+          <div class="mb-4">
+            <label for="motherOccupation" class="block text-gray-700">Mother's Occupation</label>
+            <input [(ngModel)]="childForm.motherOccupation" name="motherOccupation" id="motherOccupation" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Father's Name -->
+          <div class="mb-4">
+            <label for="fatherName" class="block text-gray-700">Father's Name</label>
+            <input [(ngModel)]="childForm.fatherName" name="fatherName" id="fatherName" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Father's Education -->
+          <div class="mb-4">
+            <label for="fatherEducation" class="block text-gray-700">Father's Education</label>
+            <input [(ngModel)]="childForm.fatherEducation" name="fatherEducation" id="fatherEducation" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Father's Occupation -->
+          <div class="mb-4">
+            <label for="fatherOccupation" class="block text-gray-700">Father's Occupation</label>
+            <input [(ngModel)]="childForm.fatherOccupation" name="fatherOccupation" id="fatherOccupation" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Number of Pregnancies -->
+          <div class="mb-4">
+            <label for="noOfPregnancies" class="block text-gray-700">Number of Pregnancies</label>
+            <input [(ngModel)]="childForm.noOfPregnancies" name="noOfPregnancies" id="noOfPregnancies" type="number" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Date of Birth -->
+          <div class="mb-4">
+            <label for="birthDate" class="block text-gray-700">Date of Birth</label>
+            <input [(ngModel)]="childForm.birthDate" name="birthDate" id="birthDate" type="date" required class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Gestational Age -->
+          <div class="mb-4">
+            <label for="gestationalAge" class="block text-gray-700">Gestational Age (weeks)</label>
+            <input [(ngModel)]="childForm.gestationalAge" name="gestationalAge" id="gestationalAge" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Birth Type -->
+          <div class="mb-4">
+            <label for="birthType" class="block text-gray-700">Birth Type</label>
+            <select [(ngModel)]="childForm.birthType" name="birthType" id="birthType" class="mt-2 w-full px-4 py-2 border rounded-md">
+              <option value="Normal">Normal</option>
+              <option value="Caesarean">Caesarean</option>
+            </select>
+          </div>
+      
+          <!-- Gender -->
+          <div class="mb-4">
+            <label for="gender" class="block text-gray-700">Gender</label>
+            <select [(ngModel)]="childForm.gender" name="gender" id="gender" class="mt-2 w-full px-4 py-2 border rounded-md">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+      
+          <!-- Birth Weight -->
+          <div class="mb-4">
+            <label for="birthWeight" class="block text-gray-700">Birth Weight (kg)</label>
+            <input [(ngModel)]="childForm.birthWeight" name="birthWeight" id="birthWeight" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Birth Length -->
+          <div class="mb-4">
+            <label for="birthLength" class="block text-gray-700">Birth Length (cm)</label>
+            <input [(ngModel)]="childForm.birthLength" name="birthLength" id="birthLength" class="mt-2 w-full px-4 py-2 border rounded-md" />
+          </div>
+      
+          <!-- Place of Delivery -->
+          <div class="mb-4">
+            <label for="placeOfDelivery" class="block text-gray-700">Place of Delivery</label>
+            <select [(ngModel)]="childForm.placeOfDelivery" name="placeOfDelivery" id="placeOfDelivery" class="mt-2 w-full px-4 py-2 border rounded-md">
+              <option value="Hospital">Hospital</option>
+              <option value="Home">Home</option>
+              <option value="Clinic">Clinic</option>
+            </select>
+          </div>
+      
+          <!-- Birth Attendant -->
+          <div class="mb-4">
+            <label for="birthAttendant" class="block text-gray-700">Birth Attendant</label>
+            <select [(ngModel)]="childForm.birthAttendant" name="birthAttendant" id="birthAttendant" class="mt-2 w-full px-4 py-2 border rounded-md">
+              <option value="Doctor">Doctor</option>
+              <option value="Nurse">Nurse</option>
+              <option value="Midwife">Midwife</option>
+            </select>
+          </div>
+      
+          <!-- Medical Notes -->
+          <div class="mb-4">
+            <label for="medicalNotes" class="block text-gray-700">Medical Notes</label>
+            <textarea [(ngModel)]="childForm.medicalNotes" name="medicalNotes" id="medicalNotes" class="mt-2 w-full px-4 py-2 border rounded-md" rows="3"></textarea>
+          </div>
+        </div>
+      
+        <!-- Submit Button -->
+        <button type="submit" class="mt-4 w-full py-2 bg-blue-600 text-white rounded-md">
+          {{ childForm.id ? 'Update Child' : 'Save Child' }}
+        </button>
+      </form>
+    
+      <!-- Close Modal Button -->
+      <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900">X</button>
+    </div>
+            </div>
+
+        </div>
+
+  </div>
+  
+  
+    <!-- Children List (Full Width) -->
+    <div class="mt-6">  
+      <h3 class="text-xl font-semibold">Children List</h3>
+      <ul class="mt-4 space-y-2">
+        <li *ngFor="let child of (children$ | async)">
+          <div class="flex justify-between items-center p-4 border-b">
+            <span class="font-semibold">{{ child.childName }} {{ child.birthDate }}</span>
+            <div class="flex gap-2">
+              <!-- Edit and Delete Buttons -->
+              <button (click)="editChild(child)" class="text-blue-600 hover:text-blue-800">Edit</button>
+              <button (click)="deleteChild(child.id || '')" class="text-red-600 hover:text-red-800">Delete</button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  

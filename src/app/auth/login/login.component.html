@@ -2,56 +2,38 @@
   <!-- Left Side - Background Image Section -->
   <div
     class="relative flex flex-col items-center justify-center p-12 text-center text-white bg-cover bg-center w-5/6 hidden md:flex"
-    style="background-image: url('assets/images/tax bg.jpg');">
+    style="background-image: url('assets/images/loginbg.jpg');">
   </div>
 
   <!-- Right Side - Login Form -->
-  <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-12 bg-slate-100 shadow-lg">
-    <h2 class="text-5xl font-extrabold mb-6 text-yellow-600 drop-shadow-lg text-center">
-      Tax Management System
+  <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-12 bg-slate-100 shadow-2xl border border-gray-200 rounded-lg">
+    <h2 class="text-7xl font-extrabold mb-4 text-teal-700 text-center">
+      Prenatal & Child Immunization
     </h2>
+    <h3 class="text-3xl font-normal mb-6 text-teal-800 text-center">
+      Secure & Efficient Tracking System
+    </h3>
 
-    <p class="text-lg text-gray-700 leading-relaxed mb-6 text-center">
-      A powerful and secure tax management system designed to simplify tax filing,
-      ensure compliance, and streamline financial processes.
+    <p class="text-md text-gray-600 mb-20 text-center">
+      A powerful and secure immunization tracking system designed for efficiency, compliance, and patient care.
     </p>
 
-    <h2 class="text-3xl font-bold mb-6">Welcome Back</h2>
-    <p class="text-gray-600 mb-6">Please enter your details</p>
-
-    <!-- Email Input -->
-    <input type="email" [(ngModel)]="email" placeholder="Email address"
-      class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500" />
-
-    <!-- Password Input -->
-    <input type="password" [(ngModel)]="password" placeholder="Password"
-      class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500" />
-
-    <div *ngIf="loading" class="spinner">Loading...</div>
-
-    <!-- Login Form Submit Button -->
-    <button (click)="login()"
-      class="bg-purple-600 hover:bg-purple-700 transition-all text-white p-3 w-60 rounded-lg"
-      [disabled]="loading">
-      Sign In
-    </button>
+    <p class="text-gray-500 mb-6 font-medium">Choose a login method</p>
 
     <!-- Google Sign-In Button -->
-    <div class="mt-4 w-full">
-      <button (click)="loginWithGoogle()"
-        class="border flex items-center justify-center p-3 w-full rounded-lg hover:bg-gray-200 transition-all"
-        [disabled]="loading">
-        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 mr-2" alt="Google"> Sign in with Google
-      </button>
-    </div>
+    <button (click)="loginWithGoogle()" 
+      class="flex items-center justify-center w-60 p-3 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-100 transition-all shadow-sm"
+      [disabled]="loading">
+      <img src="assets/images/Facebook.png" class="w-6 h-6 mr-3" alt="Google">
+      Sign in with Google
+    </button>
 
-    <p class="text-sm text-gray-500 mt-4 cursor-pointer">
-      Don't have an account? <a (click)="loginWithGoogle()" class="text-purple-600 hover:underline">Sign up</a>
-    </p>
-
-    <!-- Forgot Password Link -->
-    <div class="flex justify-between w-full text-sm text-gray-500 mb-4">
-      <a href="https://myaccount.google.com/intro/signinoptions/password" class="text-purple-600 hover:underline">Forgot password?</a>
-    </div>
+    <!-- Facebook Sign-In Button -->
+    <button (click)="loginWithFacebook()" 
+      class="flex items-center justify-center w-60 p-3 mt-4 rounded-lg border border-blue-500 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all shadow-sm"
+      [disabled]="loading">
+      <img src="assets/images/Facebook.png" class="w-6 h-6 mr-3" alt="Facebook">
+      Sign in with Facebook
+    </button>
   </div>
 </div>

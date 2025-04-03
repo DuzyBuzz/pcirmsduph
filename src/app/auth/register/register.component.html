@@ -1,0 +1,40 @@
+<div class="flex min-h-screen">
+    <div class="relative flex flex-col items-center justify-center p-12 text-center text-white bg-teal-100 bg-cover bg-center w-5/6 hidden md:flex"
+      style="background-image: url('assets/images/loginbg.jpg');">
+    </div>
+  
+    <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-12 bg-white shadow-lg border border-gray-200">
+      <h2 class="text-5xl font-extrabold mb-4 text-teal-700 text-center">Sign Up</h2>
+      <p class="text-gray-600 mb-6 text-center">Join now to track immunizations with SMS alerts.</p>
+  
+      <form (ngSubmit)="register()" class="w-full max-w-md">
+        <input type="text" [(ngModel)]="name" name="name" placeholder="Full Name"
+          class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500" required />
+  
+        <input type="email" [(ngModel)]="email" name="email" placeholder="Email address"
+          class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500" required />
+  
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Password"
+          class="border p-3 w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500" required />
+  
+        <div *ngIf="errorMessage" class="text-red-500 mb-4">{{ errorMessage }}</div>
+  
+        <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white p-3 w-full rounded-lg font-bold"
+          [disabled]="loading">
+          {{ loading ? 'Registering...' : 'Sign Up' }}
+        </button>
+      </form>
+  
+      <div class="mt-4 w-auto">
+        <button (click)="registerWithGoogle()" class="border flex items-center justify-center p-3 w-full rounded-lg hover:bg-gray-200 transition-all"
+          [disabled]="loading">
+          <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 mr-2" alt="Google"> Sign up with Google
+        </button>
+      </div>
+  
+      <p class="text-sm text-gray-500 mt-4">
+        Already have an account? <a routerLink="/auth/login" class="text-teal-600 hover:underline">Sign in</a>
+      </p>
+    </div>
+  </div>
+  

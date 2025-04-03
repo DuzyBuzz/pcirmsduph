@@ -4,20 +4,20 @@
 </button>
 
 <!-- Sidebar -->
-<div class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg p-6 transform transition-transform duration-300 ease-in-out"
+<div class="fixed left-0 top-0 h-full w-56 bg-white shadow-lg p-6 transform transition-transform duration-300 ease-in-out"
      [ngClass]="{'-translate-x-full': !mobileMenuOpen, 'translate-x-0': mobileMenuOpen, 'md:translate-x-0': true}">
 
-  <h2 class="text-3xl font-black mb-6 text-gray-700 text-center">UMS</h2>
+  <h2 class="text-3xl font-black mb-6 text-gray-700 text-center">PCRIM</h2>
 
   <nav class="flex flex-col space-y-3 cursor-pointer">
-    <button routerLink="/users/dashboard" routerLinkActive="active"
+    <button routerLink="/users/appointments"
       class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition">
-      Dashboard
+      Appointments
     </button>
-
-    <button routerLink="/users/tax-filing" routerLinkActive="active"
+    
+    <button routerLink="/users/children" routerLinkActive="active"
       class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition">
-      Tax-Filing
+      Children
     </button>
 
     <button class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition">
