@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Child } from '../../../../models/child.model';
+import { Child } from '../../../models/child.model';
 
 @Component({
   selector: 'app-child-form',

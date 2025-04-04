@@ -2,7 +2,7 @@ import {  Routes } from '@angular/router';
 import { UsersComponent } from './users.component';
 import { AppointmentsComponent } from '../pages/appointments/appointments.component';
 import { ChildrenComponent } from '../pages/children/children.component';
-import { ChildFormComponent } from '../pages/forms/prenatal-form/child-form/child-form.component';
+import { ChildFormComponent } from '../pages/forms/child-form/child-form.component';
 import { PrenatalComponent } from '../pages/prenatal/prenatal.component';
 import { PrenatalFormComponent } from '../pages/forms/prenatal-form/prenatal-form.component';
 

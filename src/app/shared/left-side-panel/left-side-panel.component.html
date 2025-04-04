@@ -1,53 +1,61 @@
-<button
-  (click)="toggleMobileMenu()"
-  class="fixed top-4 left-4 z-50 md:hidden bg-sky-300 text-white p-2 rounded-full shadow-lg flex items-center justify-center"
-  aria-label="Toggle navigation">
-  <img src="assets/images/immune-system.png" alt="Menu" class="w-6 h-6 object-contain" />
-</button>
-
-
-<!-- Mobile Overlay -->
+<!-- Gesture Container with HammerJS Swipe Support -->
 <div
-  *ngIf="mobileMenuOpen"
-  class="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
-  (click)="toggleMobileMenu()">
-</div>
+  class="relative w-full h-full overflow-hidden"
+  (swipeleft)="onSwipeLeft()"
+  (swiperight)="onSwipeRight()"
+>
 
-<!-- Sidebar -->
-<div
-  class="z-50 rounded-lg bg-slate-50 shadow-lg transform transition-transform duration-300 ease-in-out
-         fixed top-0 left-0 h-screen w-64 p-6
-         md:relative md:h-screen md:translate-x-0 md:shadow-none md:block"
-  [ngClass]="{
-    '-translate-x-full': !mobileMenuOpen,
-    'translate-x-0': mobileMenuOpen
-  }">
+  <!-- Sidebar Toggle Button (Already existing) -->
+  <button
+    (click)="toggleMobileMenu()"
+    class="fixed top-2 left-2 z-50 md:hidden bg-sky-300 text-white p-2 rounded-full shadow-lg flex items-center justify-center"
+    aria-label="Toggle navigation"
+  >
+    <img src="assets/images/immune-system.png" alt="Menu" class="w-6 h-6 object-contain" />
+  </button>
 
-  <!-- Logo -->
-  <div class="flex flex-col items-center mb-6 space-y-2">
-    <img src="assets/images/immune-system.png" alt="Menu Icon" class="w-12 h-12 object-contain rounded-full bg-sky-300" />
-    <h2 class="text-3xl font-black text-teal-700">PCRIM</h2>
+  <!-- Overlay -->
+  <div
+    *ngIf="mobileMenuOpen"
+    class="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+    (click)="toggleMobileMenu()"
+  ></div>
+
+  <!-- Sidebar Panel -->
+  <div
+    class="z-50 rounded-lg bg-slate-50 shadow-lg transform transition-transform duration-300 ease-in-out
+           fixed top-0 left-0 h-screen w-64 p-6
+           md:relative md:h-screen md:translate-x-0 md:shadow-none md:block"
+    [ngClass]="{
+      '-translate-x-full': !mobileMenuOpen,
+      'translate-x-0': mobileMenuOpen
+    }"
+  >
+    <!-- Logo -->
+    <div class="flex flex-col items-center mb-6 space-y-2">
+      <img src="assets/images/immune-system.png" alt="Menu Icon" class="w-12 h-12 object-contain rounded-full bg-sky-300" />
+      <h2 class="text-3xl font-black text-teal-700">PCRIM</h2>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex flex-col space-y-3">
+      <button routerLink="/ob-gyne/appointments"
+        class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
+        Appointments
+      </button>
+
+      <button routerLink="/ob-gyne/prenatal" routerLinkActive="active"
+        class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
+        Prenatal
+      </button>
+      <button routerLink="/ob-gyne/children" routerLinkActive="active"
+        class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
+        Children
+      </button>
+
+      <button class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
+        Messages
+      </button>
+    </nav>
   </div>
-
-  <!-- Navigation -->
-  <nav class="flex flex-col space-y-3">
-    <button routerLink="/ob-gyne/appointments"
-      class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-      Appointments
-    </button>
-
-    <button routerLink="/ob-gyne/prenatal" routerLinkActive="active"
-      class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-      Prenatal
-    </button>
-    <button routerLink="/ob-gyne/children" routerLinkActive="active"
-    class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-    Children
-    </button>
-
-    <button class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-      Messages
-    </button>
-  </nav>
 </div>
-

@@ -25,6 +25,15 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   showPermissionError = false;
   filteredMothersList: any[] = [];
   isSidebarHidden: boolean = false;
+  selectedMotherId: string | null = null;
+
+
+
+
+
+  toggleActionButtons(motherId: string) {
+    this.selectedMotherId = this.selectedMotherId === motherId ? null : motherId;
+  }
 
 
   auth = inject(Auth); // Inject Firebase Authentication
@@ -64,6 +73,11 @@ export class PrenatalComponent implements OnInit, OnDestroy {
       this.clickListener();
     }
   }
+  selectMother(motherId: string): void {
+    this.selectedMotherId = motherId;
+    this.isSidebarHidden = true; // hide the sidebar and show pregnancy record component
+  }
+  
   // Method to toggle the sidebar visibility
   toggleSidebar(): void {
     this.isSidebarHidden = !this.isSidebarHidden;
@@ -216,4 +230,5 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   closePermissionError(): void {
     this.showPermissionError = false;
   }
+
 }

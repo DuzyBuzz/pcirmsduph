@@ -1,4 +1,4 @@
-<div class="flex-1 p-6 bg-slate-50 h-fit rounded-lg ">
+<div class="flex-1 p-6 bg-slate-50 h-fit rounded-lg">
   <!-- Mother's Info Form -->
   <form
     [formGroup]="motherForm"
@@ -6,10 +6,12 @@
     class="space-y-6 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
     novalidate
   >
-    <h2 class="text-2xl font-bold text-blue-700 border-b border-blue-100 pb-2">Mother's Information</h2>
+    <h2 class="text-2xl font-bold text-blue-700 border-b border-blue-100 pb-2">
+      Mother's Information
+    </h2>
 
     <div class="grid md:grid-cols-2 gap-6">
-      <!-- Name -->
+      <!-- Full Name -->
       <div class="flex flex-col">
         <label class="text-blue-600 font-medium mb-1">Full Name</label>
         <input
@@ -45,19 +47,59 @@
         <small *ngIf="isInvalid(motherForm, 'contactNumber')" class="text-red-600 text-sm mt-1">Contact is required.</small>
       </div>
 
-      <!-- LMP -->
+      <!-- Age -->
       <div class="flex flex-col">
-        <label class="text-blue-600 font-medium mb-1">Last Menstruation Date</label>
+        <label class="text-blue-600 font-medium mb-1">Age</label>
         <input
-          formControlName="lastMenstruationDate"
-          type="date"
-          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'lastMenstruationDate') }"
+          formControlName="age"
+          type="number"
+          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'age') }"
           class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
         />
-        <small *ngIf="isInvalid(motherForm, 'lastMenstruationDate')" class="text-red-600 text-sm mt-1">Required field.</small>
+        <small *ngIf="isInvalid(motherForm, 'age')" class="text-red-600 text-sm mt-1">Age is required.</small>
       </div>
 
-      <!-- Due Date -->
+      <!-- Gravida (G) -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Gravida (G)</label>
+        <input
+          formControlName="g"
+          type="number"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <!-- Para (P) -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Para (P)</label>
+        <input
+          formControlName="p"
+          type="number"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <!-- Medical History (Hx) -->
+      <div class="flex flex-col md:col-span-2">
+        <label class="text-blue-600 font-medium mb-1">Medical History (Hx)</label>
+        <textarea
+          formControlName="hx"
+          rows="3"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200 resize-none"
+        ></textarea>
+      </div>
+
+      <!-- LMP -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Last Menstruation Period (LMP)</label>
+        <input
+          formControlName="lmp"
+          type="date"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <!-- Estimated Due Date -->
       <div class="flex flex-col">
         <label class="text-blue-600 font-medium mb-1">Estimated Due Date</label>
         <input
@@ -68,9 +110,18 @@
         />
         <small *ngIf="isInvalid(motherForm, 'dueDate')" class="text-red-600 text-sm mt-1">Required field.</small>
       </div>
+
+      <!-- Ultrasound -->
+      <div class="flex flex-col md:col-span-2">
+        <label class="text-blue-600 font-medium mb-1">Ultrasound Result</label>
+        <input
+          formControlName="ultrasound"
+          type="text"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
     </div>
 
-    <!-- Next Button -->
     <div class="text-center justify-center">
       <button
         type="submit"
@@ -90,14 +141,19 @@
     class="space-y-6 mt-10 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
     novalidate
   >
-    <h2 class="text-2xl font-bold text-red-600 border-b border-red-200 pb-2">Emergency Information</h2>
+    <h2 class="text-2xl font-bold text-red-600 border-b border-red-200 pb-2">
+      Emergency Information
+    </h2>
 
     <div class="grid md:grid-cols-2 gap-6">
       <ng-container *ngFor="let field of emergencyFields">
         <div class="flex flex-col">
           <label [class.text-red-600]="true" class="font-medium mb-1">{{ field.label }}</label>
-          <input [formControlName]="field.name" [type]="field.type"
-            class="px-4 py-3 border border-red-200 rounded-xl shadow-sm focus:ring-2 focus:ring-red-300 focus:outline-none" />
+          <input
+            [formControlName]="field.name"
+            [type]="field.type"
+            class="px-4 py-3 border border-red-200 rounded-xl shadow-sm focus:ring-2 focus:ring-red-300 focus:outline-none"
+          />
         </div>
       </ng-container>
     </div>

@@ -9,7 +9,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
 import { ChildrenComponent } from './children/children.component';
 import { PrenatalComponent } from './prenatal/prenatal.component';
-import { ChildFormComponent } from './forms/prenatal-form/child-form/child-form.component';
+import { ChildFormComponent } from './forms/child-form/child-form.component';
 import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-record/mothers-pregnancy-record.component";
 
 
@@ -21,6 +21,7 @@ import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-re
     ChildrenComponent,
     ChildFormComponent,
     PrenatalComponent
+
   ],
   imports: [
     CommonModule,
@@ -30,6 +31,7 @@ import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-re
     FullCalendarModule,
     NgxChartsModule,
     MothersPregnancyRecordComponent
+
 ],
   exports: [
     DashboardComponent,
@@ -38,6 +40,7 @@ import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-re
     ChildrenComponent,
     ChildFormComponent,
     PrenatalComponent
+
   ],
 })
 export class PagesModule {}

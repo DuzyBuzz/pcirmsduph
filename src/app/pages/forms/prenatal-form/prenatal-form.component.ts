@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
-import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-prenatal-form',
@@ -20,6 +18,15 @@ export class PrenatalFormComponent implements OnInit {
   auth = inject(Auth);
   mothers: any[] = [];
 
+  emergencyFields = [
+    { name: 'spouseName', label: 'Spouse Name', type: 'text' },
+    { name: 'spouseContact', label: 'Spouse Contact Number', type: 'tel' },
+    { name: 'parentName', label: 'Parent/Guardian Name', type: 'text' },
+    { name: 'parentContact', label: 'Parent/Guardian Contact', type: 'tel' },
+    { name: 'fatherName', label: 'Father’s Name', type: 'text' },
+    { name: 'fatherContact', label: 'Father’s Contact Number', type: 'tel' },
+  ];
+
   constructor(private fb: FormBuilder, private firestore: Firestore) {}
 
   ngOnInit(): void {
@@ -27,8 +34,13 @@ export class PrenatalFormComponent implements OnInit {
       name: ['', Validators.required],
       homeAddress: ['', Validators.required],
       contactNumber: ['', Validators.required],
-      lastMenstruationDate: ['', Validators.required],
-      dueDate: ['', Validators.required]
+      age: ['', Validators.required],
+      g: [''],
+      p: [''],
+      hx: [''],
+      lmp: [''],
+      dueDate: ['', Validators.required],
+      ultrasound: ['']
     });
 
     this.emergencyForm = this.fb.group({
@@ -42,21 +54,13 @@ export class PrenatalFormComponent implements OnInit {
 
     this.loadMothers();
   }
-  emergencyFields = [
-    { name: 'spouseName', label: 'Spouse Name', type: 'text' },
-    { name: 'spouseContact', label: 'Spouse Contact Number', type: 'tel' },
-    { name: 'parentName', label: 'Parent/Guardian Name', type: 'text' },
-    { name: 'parentContact', label: 'Parent/Guardian Contact', type: 'tel' },
-    { name: 'fatherName', label: 'Father’s Name', type: 'text' },
-    { name: 'fatherContact', label: 'Father’s Contact Number', type: 'tel' },
-  ];
+
   isInvalid(form: FormGroup, field: string): boolean {
     const control = form.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
-
-  submitMother() {
+  submitMother(): void {
     if (this.motherForm.invalid) {
       this.motherForm.markAllAsTouched();
       return;
@@ -74,19 +78,20 @@ export class PrenatalFormComponent implements OnInit {
       alert('Please provide at least one emergency contact.');
       return;
     }
-    const currentUser = this.auth.currentUser;
 
+    const currentUser = this.auth.currentUser;
     if (!currentUser) {
       console.error('No authenticated user.');
       return;
     }
 
     try {
-      const motherInfo = this.motherForm.value;
-      const emergencyInfo = this.emergencyForm.value;
-      const data = { ...motherInfo, ...emergencyInfo,
+      const data = {
+        ...this.motherForm.value,
+        ...this.emergencyForm.value,
         uid: currentUser.uid,
-        createdAt: new Date().toISOString() };
+        createdAt: new Date().toISOString()
+      };
 
       const ref = collection(this.firestore, 'mothers');
       await addDoc(ref, data);
@@ -97,7 +102,7 @@ export class PrenatalFormComponent implements OnInit {
       this.showEmergency = false;
       this.loadMothers();
     } catch (error) {
-      console.error('Error saving mother info:', error);
+      console.error('Error saving data:', error);
       alert('Something went wrong while saving. Please try again.');
     }
   }

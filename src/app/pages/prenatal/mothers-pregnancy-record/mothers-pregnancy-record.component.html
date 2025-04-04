@@ -1,1 +1,84 @@
-<p>mothers-pregnancy-record works!</p>
+<!-- Patient Information Summary -->
+<div class="p-6 bg-gradient-to-r from-blue-50 to-sky-100 rounded-2xl shadow-lg mb-8 text-center">
+  <h2 class="text-xl font-bold text-blue-600 mb-6">Patient Information</h2>
+  <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
+  <div *ngIf="!loading && motherData">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-9 gap-6 text-sm text-gray-700 text-left max-w-7xl mx-auto">
+      <div><span class="font-semibold text-blue-500">Name:</span><br> {{ motherData?.name || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Home Address:</span><br> {{ motherData?.address || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Age:</span><br> {{ motherData?.age || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">G:</span><br> {{ motherData?.g || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">P:</span><br> {{ motherData?.p || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Hx:</span><br> {{ motherData?.hx || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">LMP:</span><br> {{ motherData?.lmp || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Ultrasound:</span><br> {{ motherData?.ultrasound || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Contact Number:</span><br> {{ motherData?.contactNumber || 'N/A' }}</div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- Record Prenatal Container -->
+<div class="p-6 bg-white rounded-xl shadow-lg max-h-full">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold text-blue-600">
+      {{ showSubmittedRecords ? 'Submitted Records' : 'Record Prenatal' }}
+    </h2>
+
+    <!-- Toggle Button -->
+    <button
+      class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-xl shadow transition"
+      (click)="toggleSubmittedView()"
+    >
+      {{ showSubmittedRecords ? 'Back to Form' : 'Show Submitted Records' }}
+    </button>
+  </div>
+
+  <!-- Form Layout -->
+  <div *ngIf="!showSubmittedRecords">
+    <form [formGroup]="pregnancyForm" (ngSubmit)="onSubmit()" class="justify-center items-center">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 h-full">
+        <div *ngFor="let col of columns" class="flex flex-col">
+          <label [for]="col.key" class="font-semibold text-xs text-gray-700 mb-1">{{ col.label }}</label>
+          <input
+            [type]="col.type"
+            [formControlName]="col.key"
+            [placeholder]="col.placeholder"
+            [id]="col.key"
+            class="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+      </div>
+
+      <!-- Centered Save Button -->
+      <div class="flex justify-center mt-4">
+        <button
+          type="submit"
+          [disabled]="pregnancyForm.invalid"
+          class="bg-blue-500 text-white px-6 py-2 rounded-xl hover:bg-blue-600 transition"
+        >
+          Save Record
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Submitted Records Section -->
+  <div *ngIf="showSubmittedRecords" class="w-full mt-6">
+    <div class="overflow-y-auto max-h-96 border border-gray-300 rounded-lg shadow p-4">
+      <table class="min-w-full table-auto border-collapse border border-gray-300 text-sm">
+        <thead>
+          <tr class="bg-blue-100">
+            <th *ngFor="let col of columns" class="border px-2 py-1 text-left">{{ col.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of records">
+            <td *ngFor="let col of columns" class="border px-2 py-1">{{ record[col.key] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
