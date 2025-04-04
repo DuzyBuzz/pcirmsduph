@@ -1,8 +1,8 @@
-import { MotherServiceService } from './../../../services/mother/mother-service.service';
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { switchMap } from 'rxjs';
+import { MothersService } from '../../../services/mother/mother-service.service';
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
@@ -10,14 +10,14 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
   templateUrl: './mothers-pregnancy-record.component.html',
   styleUrls: ['./mothers-pregnancy-record.component.scss']
 })
-export class MothersPregnancyRecordComponent implements OnChanges  {
+export class MothersPregnancyRecordComponent implements OnInit {
   pregnancyForm: FormGroup;
   records: any[] = [];
   motherData: any;
   showSubmittedRecords = false;
   loading = true;
-  @Input() motherId: string | null = null;
-
+  @Input() motherId: string | null = null;  // motherId as an Input
+  error: string | null = null; // Error property to show error messages
 
   columns = [
     { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
@@ -47,50 +47,53 @@ export class MothersPregnancyRecordComponent implements OnChanges  {
     { key: 'rbs', label: 'RBS', type: 'text', placeholder: '' },
     { key: 'ultrasound', label: 'Ultrasound', type: 'text', placeholder: '' },
     { key: 'otherLabs', label: 'Other Labs', type: 'text', placeholder: '' },
-    { key: 'followUp', label: 'Follow Up', type: 'text', placeholder: '' },
+    { key: 'followUp', label: 'Follow Up', type: 'date', placeholder: '' },
   ];
 
-  constructor(private fb: FormBuilder, private firestore: AngularFirestore, private motherService: MotherServiceService) {
+  constructor(
+    private fb: FormBuilder,
+    private mothersService: MothersService
+  ) {
     this.pregnancyForm = this.fb.group({});
     this.initializeFormControls();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['motherId'] && this.motherId) {
-      this.fetchMotherData(this.motherId);
+  ngOnInit(): void {
+    if (this.motherId) {
+      // Use the motherId directly passed via Input()
+      this.mothersService.getMotherById(this.motherId).subscribe({
+        next: (data) => {
+          this.motherData = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = 'Failed to fetch mother data.';
+          this.loading = false;
+        }
+      });
+    } else {
+      this.error = 'Mother ID is missing.';
+      this.loading = false;
     }
   }
-
-  fetchMotherData(motherId: string): void {
-    this.loading = true;
-
-    this.motherService.getMotherById(motherId).subscribe(data => {
-      this.motherData = data;
-      this.loading = false;
-    });
-
-    this.motherService.getPregnancyRecords(motherId).subscribe(records => {
-      this.records = records || [];
-    });
-  }
-
 
   initializeFormControls() {
     for (const column of this.columns) {
       const defaultValue = column.key === 'date'
-        ? new Date().toISOString().split('T')[0]
+        ? new Date().toISOString().split('T')[0] // Default date to today
         : '';
       this.pregnancyForm.addControl(column.key, this.fb.control(defaultValue));
     }
   }
+
   toggleSubmittedView() {
     this.showSubmittedRecords = !this.showSubmittedRecords;
   }
 
   onSubmit() {
-    this.records.push(this.pregnancyForm.value);
+    this.records.push(this.pregnancyForm.value);  // Add the form value to records
     this.pregnancyForm.reset({
-      date: new Date().toISOString().split('T')[0]
+      date: new Date().toISOString().split('T')[0]  // Reset date field
     });
   }
 }

@@ -73,11 +73,14 @@ export class PrenatalComponent implements OnInit, OnDestroy {
       this.clickListener();
     }
   }
+    // Set selectedMotherId when a mother is clicked
   selectMother(motherId: string): void {
     this.selectedMotherId = motherId;
+    console.log('Selected Mother ID parent:', this.selectedMotherId);
+
     this.isSidebarHidden = true; // hide the sidebar and show pregnancy record component
   }
-  
+
   // Method to toggle the sidebar visibility
   toggleSidebar(): void {
     this.isSidebarHidden = !this.isSidebarHidden;

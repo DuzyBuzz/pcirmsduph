@@ -25,6 +25,8 @@
     "@fullcalendar/timegrid": "^6.1.17",
     "@swimlane/ngx-charts": "^22.0.0-alpha.1",
     "@tailwindcss/postcss": "^4.0.17",
+    "ag-grid-angular": "^33.2.1",
+    "ag-grid-community": "^33.2.1",
     "chart.js": "^4.4.8",
     "d3": "^7.9.0",
     "firebase": "^11.6.0",
