@@ -18,8 +18,6 @@ export class AppointmentsComponent implements OnInit {
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: 'dayGridMonth',
       headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
       },
       editable: true,
       selectable: true,

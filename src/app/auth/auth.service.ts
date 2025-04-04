@@ -15,6 +15,11 @@ export class AuthService {
   constructor(private auth: Auth, private firestore: Firestore, private router: Router) {
     onAuthStateChanged(this.auth, (user) => {
       this.userSubject.next(user);
+            // Redirect to login if no user is logged in
+            if (!user) {
+              this.router.navigate(['/auth/login']);
+            }
+
     });
   }
 
