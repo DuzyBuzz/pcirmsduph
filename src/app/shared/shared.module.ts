@@ -4,8 +4,6 @@ import { LeftSidePanelComponent } from './left-side-panel/left-side-panel.compon
 import { RightSidePanelComponent } from './right-side-panel/right-side-panel.component';
 import { FooterComponent } from './footer/footer.component';
 import { RouterModule } from '@angular/router';
-import { HammerModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
-import { MyHammerConfig } from './gesture-config'; // <-- Import your custom config
 
 @NgModule({
   declarations: [
@@ -13,17 +11,11 @@ import { MyHammerConfig } from './gesture-config'; // <-- Import your custom con
     FooterComponent,
     LeftSidePanelComponent
   ],
-  imports: [CommonModule, RouterModule, HammerModule],
+  imports: [CommonModule, RouterModule],
   exports: [
     RightSidePanelComponent,
     FooterComponent,
     LeftSidePanelComponent
   ],
-  providers: [
-    {
-      provide: HAMMER_GESTURE_CONFIG,
-      useClass: MyHammerConfig
-    }
-  ]
 })
 export class SharedModule { }

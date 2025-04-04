@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Auth, User, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile } from '@angular/fire/auth';
+import {
+  Auth, User, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile
+} from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -13,18 +16,18 @@ export class AuthService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   constructor(private auth: Auth, private firestore: Firestore, private router: Router) {
-    // Removed routing logic from the constructor
-    onAuthStateChanged(this.auth, (user) => {
+    // Listen for auth state changes
+    onAuthStateChanged(this.auth, async (user) => {
       this.userSubject.next(user);
+      if (!user) {
+        this.router.navigate(['/auth/login']); // Redirect if no user is logged in
+      } else {
+        const isFirstLogin = await this.isFirstLogin(user.uid);
+        if (isFirstLogin) {
+          this.router.navigate(['/auth/setup-user']); // Redirect first-time users
+        }
+      }
     });
-  }
-
-  // Initialize routing logic in ngOnInit() or on a more appropriate lifecycle method
-  public handleAuthRedirect() {
-    const user = this.userSubject.value;
-    if (!user) {
-      this.router.navigate(['/auth/login']);
-    }
   }
 
   // ✅ Get Current User Observable
@@ -47,8 +50,10 @@ export class AuthService {
         await setDoc(doc(this.firestore, 'users', userCredential.user.uid), {
           uid: userCredential.user.uid,
           name,
-          email
+          email,
+          isFirstLogin: true // Mark as first-time login
         });
+        this.router.navigate(['/auth/setup-user']); // Redirect new users
       }
     } catch (error) {
       throw this.handleAuthError(error);
@@ -58,11 +63,18 @@ export class AuthService {
   }
 
   // ✅ Login with Email
-  async loginWithCredentials(email: string, password: string): Promise<User> {
+  async loginWithCredentials(email: string, password: string): Promise<void> {
     this.loadingSubject.next(true);
     try {
       const userCredential = await signInWithEmailAndPassword(this.auth, email.trim(), password.trim());
-      return userCredential.user;
+      const user = userCredential.user;
+
+      const isFirstLogin = await this.isFirstLogin(user.uid);
+      if (isFirstLogin) {
+        this.router.navigate(['/auth/setup-user']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
     } catch (error) {
       throw this.handleAuthError(error);
     } finally {
@@ -70,26 +82,30 @@ export class AuthService {
     }
   }
 
-  // ✅ Google Sign-In
   async googleSignIn(): Promise<User> {
     this.loadingSubject.next(true);
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.auth, provider);
-      if (result.user) {
-        await setDoc(doc(this.firestore, 'users', result.user.uid), {
-          uid: result.user.uid,
-          name: result.user.displayName,
-          email: result.user.email
-        }, { merge: true });
+      const user = result.user;
+
+      if (!user) {
+        throw new Error('No user returned from Google sign-in.');
       }
-      return result.user;
+
+      const isFirstLogin = await this.isFirstLogin(user.uid);
+      if (isFirstLogin) {
+        this.router.navigate(['/auth/setup-user']);
+      }
+
+      return user;
     } catch (error) {
       throw this.handleAuthError(error);
     } finally {
       this.loadingSubject.next(false);
     }
   }
+
 
   // ✅ Logout
   async logout(): Promise<void> {
@@ -122,11 +138,23 @@ export class AuthService {
   getLoadingState(): Observable<boolean> {
     return this.loadingSubject.asObservable();
   }
-// ✅ Check if OB-GYNE data exists for a user
-async checkObGyneData(uid: string): Promise<boolean> {
-  const obGyneDocRef = doc(this.firestore, 'users', uid);  // Create reference
-  const docSnap = await getDoc(obGyneDocRef);  // Retrieve the document
-  return docSnap.exists();  // Return true if exists, otherwise false
-}
 
+  // ✅ Check if OB-GYNE data exists for a user
+  async checkObGyneData(uid: string): Promise<boolean> {
+    const obGyneDocRef = doc(this.firestore, 'users', uid);
+    const docSnap = await getDoc(obGyneDocRef);
+    return docSnap.exists();
+  }
+
+  // ✅ Check if it's the user's first login
+  private async isFirstLogin(uid: string): Promise<boolean> {
+    const userDocRef = doc(this.firestore, 'users', uid);
+    const docSnap = await getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      return userData['isFirstLogin'] === true;
+    }
+    return false;
+  }
 }
