@@ -1,6 +1,6 @@
 <div class="relative">
-  <button (click)="toggleSidebar()" class="absolute top-0 left-0 bg-sky-400 text-white p-2 rounded-full shadow-md transition-transform">
-    <img *ngIf="isSidebarHidden" src="assets/images/extract.png" alt="Arrow Forward" class="w-6 h-6">
+  <button (click)="toggleSidebar()" class="absolute top-0 left-0  bg-sky-400 text-white p-2 rounded-full shadow-md transition-transform">
+    <img *ngIf="isSidebarHidden" src="assets/images/extract.png" alt="Arrow Forward" class="w-6 ">
     <img *ngIf="!isSidebarHidden" src="assets/images/compress.png" alt="Arrow Back" class="w-6 h-6">
   </button>
 </div>
@@ -11,8 +11,8 @@
 <aside
   class="h-full overflow-y-auto bg-gradient-to-br from-slate-50 to-slate-100 border-r border-blue-200 rounded-xl p-6 shadow-sm flex flex-col transition-all duration-300 ease-in-out"
   [ngClass]="{
-    'w-0 h-0 opacity-5 overflow-hidden overflow-y-hidden rounded-3xl bg-transparent pointer-events-none absolute': isSidebarHidden,
-    'w-96 opacity-100 pointer-events-auto': !isSidebarHidden
+    'w-0 h-0 opacity-5  overflow-hidden overflow-y-hidden rounded-3xl bg-transparent pointer-events-none absolute': isSidebarHidden,
+    'w-96 h-full opacity-100 pointer-events-auto': !isSidebarHidden
   }">
 
   <h2 class="text-2xl font-bold text-blue-700 mb-6 text-center" *ngIf="!isSidebarHidden">Prenatal Records</h2>
