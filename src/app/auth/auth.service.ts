@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, User, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile } from '@angular/fire/auth';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -13,14 +13,18 @@ export class AuthService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   constructor(private auth: Auth, private firestore: Firestore, private router: Router) {
+    // Removed routing logic from the constructor
     onAuthStateChanged(this.auth, (user) => {
       this.userSubject.next(user);
-            // Redirect to login if no user is logged in
-            if (!user) {
-              this.router.navigate(['/auth/login']);
-            }
-
     });
+  }
+
+  // Initialize routing logic in ngOnInit() or on a more appropriate lifecycle method
+  public handleAuthRedirect() {
+    const user = this.userSubject.value;
+    if (!user) {
+      this.router.navigate(['/auth/login']);
+    }
   }
 
   // ✅ Get Current User Observable
@@ -118,4 +122,11 @@ export class AuthService {
   getLoadingState(): Observable<boolean> {
     return this.loadingSubject.asObservable();
   }
+// ✅ Check if OB-GYNE data exists for a user
+async checkObGyneData(uid: string): Promise<boolean> {
+  const obGyneDocRef = doc(this.firestore, 'users', uid);  // Create reference
+  const docSnap = await getDoc(obGyneDocRef);  // Retrieve the document
+  return docSnap.exists();  // Return true if exists, otherwise false
+}
+
 }

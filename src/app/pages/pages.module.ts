@@ -8,6 +8,9 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
 import { ChildrenComponent } from './children/children.component';
+import { PrenatalComponent } from './prenatal/prenatal.component';
+import { ChildFormComponent } from './forms/prenatal-form/child-form/child-form.component';
+import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-record/mothers-pregnancy-record.component";
 
 
 @NgModule({
@@ -15,7 +18,9 @@ import { ChildrenComponent } from './children/children.component';
 
     DashboardComponent,
     AppointmentsComponent,
-    ChildrenComponent
+    ChildrenComponent,
+    ChildFormComponent,
+    PrenatalComponent
   ],
   imports: [
     CommonModule,
@@ -24,12 +29,15 @@ import { ChildrenComponent } from './children/children.component';
     RouterModule,
     FullCalendarModule,
     NgxChartsModule,
-  ],
+    MothersPregnancyRecordComponent
+],
   exports: [
     DashboardComponent,
     AppointmentsComponent,
     NgxChartsModule,
-    ChildrenComponent
+    ChildrenComponent,
+    ChildFormComponent,
+    PrenatalComponent
   ],
 })
 export class PagesModule {}

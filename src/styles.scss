@@ -23,3 +23,14 @@
   padding-top: 2rem; /* Adjust as needed */
   padding-bottom: 2rem; /* Adjust as needed */
 }
+.input {
+  @apply w-full px-4 py-2 border border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
+
+.btn-blue {
+  @apply bg-blue-500 text-white font-medium px-6 py-2 rounded-xl hover:bg-blue-600 transition;
+}
+
+.btn-green {
+  @apply bg-green-500 text-white font-medium px-6 py-2 rounded-xl hover:bg-green-600 transition;
+}

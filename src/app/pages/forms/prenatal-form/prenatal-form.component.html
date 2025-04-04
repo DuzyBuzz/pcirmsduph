@@ -1,0 +1,115 @@
+<div class="flex-1 p-6 bg-slate-50 h-fit rounded-lg ">
+  <!-- Mother's Info Form -->
+  <form
+    [formGroup]="motherForm"
+    (ngSubmit)="submitMother()"
+    class="space-y-6 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
+    novalidate
+  >
+    <h2 class="text-2xl font-bold text-blue-700 border-b border-blue-100 pb-2">Mother's Information</h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Name -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Full Name</label>
+        <input
+          formControlName="name"
+          type="text"
+          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'name') }"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+        <small *ngIf="isInvalid(motherForm, 'name')" class="text-red-600 text-sm mt-1">Name is required.</small>
+      </div>
+
+      <!-- Home Address -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Home Address</label>
+        <input
+          formControlName="homeAddress"
+          type="text"
+          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'homeAddress') }"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+        <small *ngIf="isInvalid(motherForm, 'homeAddress')" class="text-red-600 text-sm mt-1">Address is required.</small>
+      </div>
+
+      <!-- Contact Number -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Contact Number</label>
+        <input
+          formControlName="contactNumber"
+          type="tel"
+          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'contactNumber') }"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+        <small *ngIf="isInvalid(motherForm, 'contactNumber')" class="text-red-600 text-sm mt-1">Contact is required.</small>
+      </div>
+
+      <!-- LMP -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Last Menstruation Date</label>
+        <input
+          formControlName="lastMenstruationDate"
+          type="date"
+          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'lastMenstruationDate') }"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+        <small *ngIf="isInvalid(motherForm, 'lastMenstruationDate')" class="text-red-600 text-sm mt-1">Required field.</small>
+      </div>
+
+      <!-- Due Date -->
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Estimated Due Date</label>
+        <input
+          formControlName="dueDate"
+          type="date"
+          [ngClass]="{ 'border-red-400': isInvalid(motherForm, 'dueDate') }"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+        <small *ngIf="isInvalid(motherForm, 'dueDate')" class="text-red-600 text-sm mt-1">Required field.</small>
+      </div>
+    </div>
+
+    <!-- Next Button -->
+    <div class="text-center justify-center">
+      <button
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition disabled:opacity-50"
+        [disabled]="motherForm.invalid"
+      >
+        Next: Emergency Info
+      </button>
+    </div>
+  </form>
+
+  <!-- Emergency Info Form -->
+  <form
+    *ngIf="showEmergency"
+    [formGroup]="emergencyForm"
+    (ngSubmit)="submitAll()"
+    class="space-y-6 mt-10 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
+    novalidate
+  >
+    <h2 class="text-2xl font-bold text-red-600 border-b border-red-200 pb-2">Emergency Information</h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <ng-container *ngFor="let field of emergencyFields">
+        <div class="flex flex-col">
+          <label [class.text-red-600]="true" class="font-medium mb-1">{{ field.label }}</label>
+          <input [formControlName]="field.name" [type]="field.type"
+            class="px-4 py-3 border border-red-200 rounded-xl shadow-sm focus:ring-2 focus:ring-red-300 focus:outline-none" />
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="text-center justify-center">
+      <button
+        type="submit"
+        class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition disabled:opacity-50"
+        [disabled]="!atLeastOneEmergency()"
+      >
+        Submit All
+      </button>
+    </div>
+  </form>
+</div>

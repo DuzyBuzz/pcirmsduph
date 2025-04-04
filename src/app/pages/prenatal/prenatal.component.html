@@ -1,0 +1,101 @@
+<div class="relative">
+  <button (click)="toggleSidebar()" class="absolute top-0 left-0 bg-sky-400 text-white p-2 rounded-full shadow-md transition-transform">
+    <img *ngIf="isSidebarHidden" src="assets/images/extract.png" alt="Arrow Forward" class="w-6 h-6">
+    <img *ngIf="!isSidebarHidden" src="assets/images/compress.png" alt="Arrow Back" class="w-6 h-6">
+  </button>
+</div>
+
+
+
+<!-- Sidebar -->
+<aside
+  class="h-full overflow-y-auto bg-gradient-to-br from-slate-50 to-slate-100 border-r border-blue-200 rounded-xl p-6 shadow-sm flex flex-col transition-all duration-300 ease-in-out"
+  [ngClass]="{
+    'w-0 h-0 opacity-5 overflow-hidden overflow-y-hidden rounded-3xl bg-transparent pointer-events-none absolute': isSidebarHidden,
+    'w-96 opacity-100 pointer-events-auto': !isSidebarHidden
+  }">
+
+  <h2 class="text-2xl font-bold text-blue-700 mb-6 text-center" *ngIf="!isSidebarHidden">Prenatal Records</h2>
+
+  <!-- Add Prenatal Button -->
+  <button class="w-auto bg-blue-500 hover:bg-blue-600 text-white text-base font-semibold py-2 rounded-xl shadow-md transition" routerLink="/ob-gyne/prenatal-form">
+    + Add Prenatal
+  </button>
+
+  <!-- Filter Option -->
+  <div class="mt-6" *ngIf="!isSidebarHidden">
+    <label for="filter" class="text-sm font-semibold text-blue-600">Filter by Patient</label>
+    <select [(ngModel)]="filterByOwn" (ngModelChange)="onFilterChange()" id="filter" class="w-full p-2 border border-blue-200 rounded-xl mt-2">
+      <option [value]="true">My Patients</option>
+      <option [value]="false">All Patients</option>
+    </select>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="mt-4" *ngIf="!isSidebarHidden">
+    <label for="search" class="text-sm font-semibold text-blue-600">Search Patient</label>
+    <input id="search" [(ngModel)]="searchTerm" type="text" placeholder="Search by name" class="w-full p-2 border border-blue-200 rounded-xl mt-2" />
+  </div>
+
+  <h3 class="mt-8 mb-3 text-lg font-semibold text-blue-600 border-b border-blue-200 pb-1" *ngIf="!isSidebarHidden">Registered Mothers</h3>
+
+  <!-- Mother List -->
+  <div class="flex-1 max-h-[580px] overflow-y-auto space-y-3 pr-1">
+    <div *ngFor="let mother of filteredMothers()" class="bg-white border border-blue-100 rounded-xl p-4 shadow hover:shadow-md transition">
+      <div class="flex justify-between items-center">
+        <p class="text-blue-800 font-semibold text-base truncate">{{ mother.name }}</p>
+        <!-- 3 Dots Button -->
+        <button (click)="openContextMenu($event, mother)" class="text-blue-600 hover:text-blue-800 focus:outline-none">
+          <span class="material-icons">more_vert</span> <!-- This is the 3 dots icon -->
+        </button>
+      </div>
+      <p class="text-gray-600 text-sm">Spouse: <span class="font-medium text-gray-700">{{ mother.spouseName || 'N/A' }}</span></p>
+    </div>
+  </div>
+
+  <!-- Context Menu (Appears when 3 dots button is clicked) -->
+  <div *ngIf="showContextMenu && selectedMother"
+    class="absolute bg-white border border-gray-300 rounded-lg shadow-lg p-3 mt-2 w-48 transition-all ease-in-out transform"
+    [ngStyle]="{ left: contextMenuPosition.x, top: contextMenuPosition.y }"
+    (click)="onContextMenuClick($event)">
+    <div class="flex flex-col">
+      <!-- Delete Button -->
+      <button
+        (click)="openDeleteModal(selectedMother)"
+        class="text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-200 font-semibold text-sm rounded-lg py-2 px-4 mb-1 text-left">
+        <span class="material-icons mr-2">Delete</span>
+      </button>
+
+      <!-- Edit Button -->
+      <button
+        (click)="openEditForm(selectedMother)"
+        class="text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 font-semibold text-sm rounded-lg py-2 px-4 text-left">
+        <span class="material-icons mr-2">Edit</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Permission Error Modal -->
+  <div *ngIf="showPermissionError" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+      <h3 class="text-xl font-semibold text-red-600 mb-4">Permission Denied</h3>
+      <p class="mb-4">You do not have permission to edit or delete this record. This mother does not belong to your account.</p>
+      <div class="flex justify-end">
+        <button (click)="closePermissionError()" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+      <h3 class="text-xl font-semibold text-red-600 mb-4">Delete Confirmation</h3>
+      <p class="mb-4">Are you sure you want to delete {{ selectedMother?.name }}? Please type the name below to confirm.</p>
+      <input type="text" [(ngModel)]="confirmName" [placeholder]="selectedMother?.name" class="input mb-4 border border-gray-300 rounded-lg p-2 w-full" />
+      <div class="flex justify-end space-x-4">
+        <button (click)="closeDeleteModal()" class="btn-gray">Cancel</button>
+        <button (click)="deleteMother()" [disabled]="confirmName !== selectedMother?.name" class="btn-red">Delete</button>
+      </div>
+    </div>
+  </div>
+</aside>

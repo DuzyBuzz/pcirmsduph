@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Child } from '../../models/child.model';
 import { AuthService } from '../../auth/auth.service';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-children',
@@ -46,26 +47,28 @@ export class ChildrenComponent implements OnInit {
     deworming: false,
     dentalCheckup: false,
     lu100000: false,
-    lu200000: false
+    lu200000: false,
+    medicalNotes: '',
+    guardianName: '',
+    guardianContact: '',
   };
   isModalOpen = false;
 
   constructor(
     private firestore: Firestore,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.children$ = this.authService.getCurrentUser().pipe(
       switchMap(user => {
         if (user) {
           const userId = user.uid;
           const childrenRef = collection(this.firestore, 'children');
-          
-          // Query the children collection filtered by the userId
+
           const childrenQuery = query(childrenRef, where("userId", "==", userId));
-          
-          // Map Firestore data to Child interface
+
           return collectionData(childrenQuery, { idField: 'id' }).pipe(
-            map((childrenData) => 
+            map((childrenData) =>
               childrenData.map((child: any) => this.mapToChild(child))
             )
           );
@@ -76,6 +79,7 @@ export class ChildrenComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
   openModal() {
     this.isModalOpen = true;
   }
@@ -83,12 +87,12 @@ export class ChildrenComponent implements OnInit {
   closeModal() {
     this.isModalOpen = false;
   }
-  // Map Firestore data to the Child interface
+
   private mapToChild(child: any): Child {
     return {
       ...child,
-      id: child.id, // Ensure that the id field is included
-      userId: child.userId || '',  // Add default values in case they are missing
+      id: child.id,
+      userId: child.userId || '',
       childName: child.childName || '',
       motherName: child.motherName || '',
       motherEducation: child.motherEducation || '',
@@ -123,122 +127,43 @@ export class ChildrenComponent implements OnInit {
       lu200000: child.lu200000 || false,
       medicalNotes: child.medicalNotes || '',
       guardianName: child.guardianName || '',
-      guardianContact: child.guardianContact || ''
+      guardianContact: child.guardianContact || '',
     };
   }
+  navigateToChildForm() {
+    this.router.navigate(['/ob-gyne/child-form']);
+  }
+  saveChild() {
+    const currentUser = this.authService.getCurrentUser();
+    currentUser.subscribe(user => {
+      if (user) {
+        const childrenRef = collection(this.firestore, 'children');
 
-  async saveChild(): Promise<void> {
-    const user = await this.authService.getCurrentUser().toPromise();
-    if (user) {
-      const userId = user.uid;
-      const childrenRef = collection(this.firestore, 'children');
-      this.childForm.userId = userId;
-  
-      if (this.childForm.id) {
-        const childDocRef = doc(this.firestore, `children/${this.childForm.id}`);
-        const sanitizedData = this.sanitizeChildData(this.childForm);
-        await updateDoc(childDocRef, sanitizedData);
-      } else {
-        await addDoc(childrenRef, this.childForm);
+        if (this.childForm.id) {
+          // If the child has an ID, we update the existing document
+          const childRef = doc(this.firestore, `children/${this.childForm.id}`);
+          updateDoc(childRef, { ...this.childForm } as any); // Cast to `any` to match Firestore expected type
+        } else {
+          // Otherwise, we add a new child
+          addDoc(childrenRef, {
+            ...this.childForm,
+            userId: user.uid,
+          } as any); // Cast to `any` to match Firestore expected type
+        }
       }
-      this.resetForm();
-    }
+    });
+    this.closeModal();
   }
-  
 
-  deleteChild(id: string) {
-    if (id) {
-      const childDocRef = doc(this.firestore, `children/${this.childForm.id}`);
-
-      deleteDoc(childDocRef);
-    }
-  }
-  
-
-  // Set the form for editing
-  editChild(child: Child): void {
+  editChild(child: Child) {
     this.childForm = { ...child };
+    this.openModal();
   }
 
-  // Reset the form
-  resetForm(): void {
-    this.childForm = {
-      userId: '',
-      childName: '',
-      motherName: '',
-      motherEducation: '',
-      motherOccupation: '',
-      fatherName: '',
-      fatherEducation: '',
-      fatherOccupation: '',
-      noOfPregnancies: 0,
-      birthDate: '',
-      gestationalAge: '',
-      birthType: 'Normal',
-      birthOrder: 1,
-      birthWeight: '',
-      birthLength: '',
-      placeOfDelivery: 'Hospital',
-      dateOfBirthRegistration: '',
-      birthAttendant: 'Doctor',
-      gender: '',
-      newbornScreening: false,
-      bcg: false,
-      dpt: false,
-      opv: false,
-      hepatitisB: false,
-      measles: false,
-      vitaminA: false,
-      counseling: false,
-      growthMonitoring: false,
-      developmentalScreening: false,
-      deworming: false,
-      dentalCheckup: false,
-      lu100000: false,
-      lu200000: false
-    };
-  }
-
-  // Sanitize child data before saving or updating
-  private sanitizeChildData(child: Child): { [key: string]: any } {
-    return {
-      id: child.id ?? null,
-      userId: child.userId ?? null,
-      childName: child.childName ?? null,
-      motherName: child.motherName ?? null,
-      motherEducation: child.motherEducation ?? null,
-      motherOccupation: child.motherOccupation ?? null,
-      fatherName: child.fatherName ?? null,
-      fatherEducation: child.fatherEducation ?? null,
-      fatherOccupation: child.fatherOccupation ?? null,
-      noOfPregnancies: child.noOfPregnancies ?? 0,
-      birthDate: child.birthDate ?? null,
-      gestationalAge: child.gestationalAge ?? null,
-      birthType: child.birthType ?? 'Normal',
-      birthOrder: child.birthOrder ?? 1,
-      birthWeight: child.birthWeight ?? null,
-      birthLength: child.birthLength ?? null,
-      placeOfDelivery: child.placeOfDelivery ?? 'Hospital',
-      dateOfBirthRegistration: child.dateOfBirthRegistration ?? null,
-      birthAttendant: child.birthAttendant ?? 'Doctor',
-      gender: child.gender ?? null,
-      newbornScreening: child.newbornScreening ?? false,
-      bcg: child.bcg ?? false,
-      dpt: child.dpt ?? false,
-      opv: child.opv ?? false,
-      hepatitisB: child.hepatitisB ?? false,
-      measles: child.measles ?? false,
-      vitaminA: child.vitaminA ?? false,
-      counseling: child.counseling ?? false,
-      growthMonitoring: child.growthMonitoring ?? false,
-      developmentalScreening: child.developmentalScreening ?? false,
-      deworming: child.deworming ?? false,
-      dentalCheckup: child.dentalCheckup ?? false,
-      lu100000: child.lu100000 ?? false,
-      lu200000: child.lu200000 ?? false,
-      medicalNotes: child.medicalNotes ?? null,
-      guardianName: child.guardianName ?? null,
-      guardianContact: child.guardianContact ?? null,
-    };
+  deleteChild(childId: string) {
+    if (childId) {
+      const childRef = doc(this.firestore, `children/${childId}`);
+      deleteDoc(childRef);
+    }
   }
 }

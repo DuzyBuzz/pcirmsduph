@@ -15,7 +15,7 @@ export class AppointmentsComponent implements OnInit {
 
   ngOnInit() {
     this.calendarOptions = {
-      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+      plugins: [dayGridPlugin, timeGridPlugin],
       initialView: 'dayGridMonth',
       headerToolbar: {
       },

@@ -1,39 +1,48 @@
 <div class="flex min-h-screen">
   <!-- Left Side - Background Image Section -->
   <div
-    class="relative flex flex-col items-center justify-center p-12 text-center text-white bg-cover bg-center w-5/6 hidden md:flex"
+    class="relative flex flex-col items-center justify-center p-12 text-center text-white bg-cover bg-center shadow-2xl rounded-lg w-5/6 hidden md:flex"
     style="background-image: url('assets/images/loginbg.jpg');">
   </div>
 
-  <!-- Right Side - Login Form -->
-  <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-12 bg-slate-100 shadow-2xl border border-gray-200 rounded-lg">
-    <h2 class="text-7xl font-extrabold mb-4 text-teal-700 text-center">
-      Prenatal & Child Immunization
-    </h2>
-    <h3 class="text-3xl font-normal mb-6 text-teal-800 text-center">
-      Secure & Efficient Tracking System
-    </h3>
+<!-- Right Side - Login Form -->
+<div class="w-full md:w-1/2 flex flex-col justify-center items-center p-12 bg-slate-100 shadow-2xl border border-gray-200 rounded-lg">
+  <!-- Image Container -->
+  <div class="w-48 flex justify-center mb-6">
+    <img src="assets/images/immune-system.png" alt="Immune System" class=" h-auto " [routerLink]="['/setup-user']" routerLinkActive="router-link-active" >
 
-    <p class="text-md text-gray-600 mb-20 text-center">
-      A powerful and secure immunization tracking system designed for efficiency, compliance, and patient care.
-    </p>
-
-    <p class="text-gray-500 mb-6 font-medium">Choose a login method</p>
-
-    <!-- Google Sign-In Button -->
-    <button (click)="loginWithGoogle()"
-      class="flex items-center justify-center w-60 p-3 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-100 transition-all shadow-sm"
-      [disabled]="loading">
-      <img src="assets/images/google.png" class="w-10 h-10 mr-3" alt="Google">
-      Sign in with Google
-    </button>
-
-    <!-- Facebook Sign-In Button -->
-    <button (click)="loginWithFacebook()"
-      class="flex items-center justify-center w-60 p-3 mt-4 rounded-lg border border-blue-500 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all shadow-sm"
-      [disabled]="loading">
-      <img src="assets/images/Facebook.png" class="w-8 h-8 mr-3" alt="Facebook">
-      Sign in with Facebook
-    </button>
   </div>
+
+
+  <h2 class="text-5xl font-extrabold mb-4 text-teal-700 text-center">
+    Prenatal & Child Immunization
+  </h2>
+
+  <h3 class="text-2xl font-normal mb-6 text-teal-800 text-center">
+    Secure & Efficient Tracking System
+  </h3>
+
+  <p class="text-md text-gray-600 mb-20 text-center">
+    A powerful and secure immunization tracking system designed for efficiency, compliance, and patient care.
+  </p>
+
+  <p class="text-gray-500 mb-6 font-medium">Choose a login method</p>
+
+  <!-- Google Sign-In Button -->
+  <button (click)="loginWithGoogle()"
+    class="flex items-center justify-center w-60 p-3 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-100 transition-all shadow-sm"
+    [disabled]="loading">
+    <img src="assets/images/google.png" class="w-10 h-10 mr-3" alt="Google">
+    Sign in with Google
+  </button>
+
+  <!-- Facebook Sign-In Button -->
+  <button (click)="loginWithFacebook()"
+    class="flex items-center justify-center w-60 p-3 mt-4 rounded-lg border border-blue-500 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all shadow-sm"
+    [disabled]="loading">
+    <img src="assets/images/Facebook.png" class="w-8 h-8 mr-3" alt="Facebook">
+    Sign in with Facebook
+  </button>
+</div>
+
 </div>
