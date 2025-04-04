@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup,  ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Auth, user } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-setup-user',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './setup-user.component.html',
-  styleUrl: './setup-user.component.scss'
+  styleUrls: ['./setup-user.component.scss']
 })
-export class SetupUserComponent {
+export class SetupUserComponent implements OnInit {
   obForm!: FormGroup;
   uid: string | null = null;
 
@@ -21,21 +24,20 @@ export class SetupUserComponent {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    // Form setup
     this.obForm = this.fb.group({
       name: ['', Validators.required],
-      contactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
+      contactNumber: ['', Validators.required],
       hospitalName: ['', Validators.required],
       hospitalAddress: ['', Validators.required]
     });
 
-    this.getUserUid();
-  }
-
-  async getUserUid() {
-    const user$ = user(this.auth);
-    const currentUser = await firstValueFrom(user$);
-    if (currentUser) {
+    // Auth check
+    const currentUser = await firstValueFrom(user(this.auth));
+    if (!currentUser) {
+      this.router.navigate(['/auth/login']); // 🔁 Redirect if not logged in
+    } else {
       this.uid = currentUser.uid;
     }
   }
@@ -44,7 +46,7 @@ export class SetupUserComponent {
     if (this.obForm.invalid || !this.uid) return;
 
     const obInfoRef = doc(this.firestore, `users/${this.uid}`);
-    await setDoc(obInfoRef, this.obForm.value);
+    await setDoc(obInfoRef, this.obForm.value, { merge: true }); // 🔁 use merge to avoid overwriting other fields
 
     alert('Information submitted successfully!');
     this.obForm.reset();

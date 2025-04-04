@@ -15,45 +15,47 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
-  constructor(private auth: Auth, private firestore: Firestore, private router: Router) {
-    // Listen for auth state changes
+  constructor(
+    private auth: Auth,
+    private firestore: Firestore,
+    private router: Router
+  ) {
     onAuthStateChanged(this.auth, async (user) => {
       this.userSubject.next(user);
       if (!user) {
-        this.router.navigate(['/auth/login']); // Redirect if no user is logged in
+        this.router.navigate(['/auth/login']);
       } else {
-        const isFirstLogin = await this.isFirstLogin(user.uid);
-        if (isFirstLogin) {
-          this.router.navigate(['/auth/setup-user']); // Redirect first-time users
+        const isComplete = await this.isProfileComplete(user.uid);
+        if (!isComplete) {
+          this.router.navigate(['/auth/setup-user']);
         }
       }
     });
   }
 
-  // ✅ Get Current User Observable
   getCurrentUser(): Observable<User | null> {
     return this.userSubject.asObservable();
   }
 
-  // ✅ Get User ID
   async getCurrentUserId(): Promise<string | null> {
     return this.userSubject.value?.uid ?? null;
   }
 
-  // ✅ Register with Email & Password
   async registerWithEmail(email: string, password: string, name: string): Promise<void> {
     this.loadingSubject.next(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email.trim(), password.trim());
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, { displayName: name });
-        await setDoc(doc(this.firestore, 'users', userCredential.user.uid), {
-          uid: userCredential.user.uid,
+      const user = userCredential.user;
+
+      if (user) {
+        await updateProfile(user, { displayName: name });
+        await setDoc(doc(this.firestore, 'users', user.uid), {
+          uid: user.uid,
           name,
           email,
-          isFirstLogin: true // Mark as first-time login
+          isFirstLogin: true
         });
-        this.router.navigate(['/auth/setup-user']); // Redirect new users
+        this.router.navigate(['/auth/setup-user']);
       }
     } catch (error) {
       throw this.handleAuthError(error);
@@ -62,15 +64,14 @@ export class AuthService {
     }
   }
 
-  // ✅ Login with Email
   async loginWithCredentials(email: string, password: string): Promise<void> {
     this.loadingSubject.next(true);
     try {
       const userCredential = await signInWithEmailAndPassword(this.auth, email.trim(), password.trim());
       const user = userCredential.user;
 
-      const isFirstLogin = await this.isFirstLogin(user.uid);
-      if (isFirstLogin) {
+      const isComplete = await this.isProfileComplete(user.uid);
+      if (!isComplete) {
         this.router.navigate(['/auth/setup-user']);
       } else {
         this.router.navigate(['/dashboard']);
@@ -87,18 +88,9 @@ export class AuthService {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.auth, provider);
-      const user = result.user;
 
-      if (!user) {
-        throw new Error('No user returned from Google sign-in.');
-      }
-
-      const isFirstLogin = await this.isFirstLogin(user.uid);
-      if (isFirstLogin) {
-        this.router.navigate(['/auth/setup-user']);
-      }
-
-      return user;
+      if (!result.user) throw new Error('Google login failed.');
+      return result.user;
     } catch (error) {
       throw this.handleAuthError(error);
     } finally {
@@ -106,8 +98,6 @@ export class AuthService {
     }
   }
 
-
-  // ✅ Logout
   async logout(): Promise<void> {
     this.loadingSubject.next(true);
     try {
@@ -118,35 +108,40 @@ export class AuthService {
     }
   }
 
-  // ✅ Handle Auth Errors
+  async isProfileComplete(uid: string): Promise<boolean> {
+    const userDocRef = doc(this.firestore, 'users', uid);
+    const docSnap = await getDoc(userDocRef);
+
+    if (!docSnap.exists()) return false;
+
+    const data = docSnap.data();
+    return !!data['name'] && !!data['contactNumber'] && !!data['hospitalName'] && !!data['hospitalAddress'];
+  }
+
   private handleAuthError(error: any): string {
     switch (error.code) {
-      case 'auth/email-already-in-use': return "Email is already in use.";
-      case 'auth/invalid-email': return "Invalid email format.";
-      case 'auth/weak-password': return "Password should be at least 6 characters.";
-      case 'auth/wrong-password': return "Incorrect password.";
-      default: return "Authentication failed.";
+      case 'auth/email-already-in-use': return 'Email is already in use.';
+      case 'auth/invalid-email': return 'Invalid email format.';
+      case 'auth/weak-password': return 'Password should be at least 6 characters.';
+      case 'auth/wrong-password': return 'Incorrect password.';
+      default: return 'Authentication failed.';
     }
   }
 
-  // ✅ Get Admin Email from Environment
   getAdminEmail(): string {
     return environment.adminEmail;
   }
 
-  // ✅ Get Loading State Observable
   getLoadingState(): Observable<boolean> {
     return this.loadingSubject.asObservable();
   }
 
-  // ✅ Check if OB-GYNE data exists for a user
   async checkObGyneData(uid: string): Promise<boolean> {
     const obGyneDocRef = doc(this.firestore, 'users', uid);
     const docSnap = await getDoc(obGyneDocRef);
     return docSnap.exists();
   }
 
-  // ✅ Check if it's the user's first login
   private async isFirstLogin(uid: string): Promise<boolean> {
     const userDocRef = doc(this.firestore, 'users', uid);
     const docSnap = await getDoc(userDocRef);

@@ -19,31 +19,29 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  async loginWithGoogle(): Promise<void> {
+  loginWithGoogle() {
     this.loading = true;
-    try {
-      const user = await this.authService.googleSignIn();
-
-      const hasObGyneData = await this.authService.checkObGyneData(user.uid);
-      if (!hasObGyneData) {
-        this.router.navigate(['/auth/setup-user']);
-      } else {
-        this.redirectUser(user.email ?? '');
-      }
-    } catch (error: any) {
-      window.alert(error);
-    } finally {
-      this.loading = false;
-    }
+    this.authService.googleSignIn()
+      .then(async (user: User) => {
+        this.loading = false;
+        const isComplete = await this.authService.isProfileComplete(user.uid);
+        if (!isComplete) {
+          this.router.navigate(['/auth/setup-user']);
+        } else {
+          this.redirectUser(user.email);
+        }
+      })
+      .catch(errorMessage => {
+        this.loading = false;
+        window.alert(errorMessage);
+      });
   }
-
-
 
   async loginWithFacebook() {
     window.alert('Facebook login is unavailable. Please try again next year.');
   }
 
-  private redirectUser(email: string): void {
+  private redirectUser(email: string | null): void {
     if (!email) return;
     if (email === this.authService.getAdminEmail()) {
       this.router.navigate(['/admin']);
