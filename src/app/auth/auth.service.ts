@@ -37,6 +37,7 @@ export class AuthService {
     return this.userSubject.asObservable();
   }
 
+  
   async getCurrentUserId(): Promise<string | null> {
     return this.userSubject.value?.uid ?? null;
   }

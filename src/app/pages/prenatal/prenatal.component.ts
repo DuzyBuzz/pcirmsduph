@@ -26,8 +26,11 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   filteredMothersList: any[] = [];
   isSidebarHidden: boolean = false;
   selectedMotherId: string | null = null;
-
-
+  motherId: string | null = null; // The input motherId (could be passed from a parent component)
+  motherUid: string | null = null; // The UID of the mother
+  userDetails: any = {}; // To store user details
+  error: string | null = null;
+  loading = true;
 
 
 
@@ -43,7 +46,8 @@ export class PrenatalComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private firestore: Firestore,
     private renderer: Renderer2,
-    private el: ElementRef
+    private el: ElementRef,
+    
   ) {}
 
   ngOnInit(): void {

@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { MothersService } from '../../../services/mother/mother-service.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
@@ -54,7 +55,8 @@ export class MothersPregnancyRecordComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private mothersService: MothersService
+    private mothersService: MothersService,
+    private authService: AuthService
   ) {
     this.pregnancyForm = this.fb.group({});
     this.initializeFormControls();
@@ -78,6 +80,18 @@ export class MothersPregnancyRecordComponent implements OnInit {
       this.loading = false;
     }
   }
+  // Method to check if the logged-in user can edit or delete the record
+  canEditOrDelete(record: any): boolean {
+    // Compare the logged-in user's UID with the mother's UID
+    const currentUserId = this.authService.getCurrentUserId();
+    console.log(currentUserId)
+    return record.motherUid === currentUserId; // If they match, return true, otherwise false
+  }
+
+  async checkIfUserCanEditOrDelete(): Promise<boolean> {
+    const currentUserId = await this.authService.getCurrentUserId(); // Get current user's UID
+    return currentUserId === this.motherData?.uid; // Compare with mother's UID
+  }
 
   loadPrenatalRecords() {
     this.mothersService.getPrenatalRecords(this.motherId!).then(records => {
@@ -100,54 +114,80 @@ export class MothersPregnancyRecordComponent implements OnInit {
   }
 
   onEditRecord(index: number) {
-    const record = this.records[index];
-    this.pregnancyForm.patchValue(record);
-    this.records.splice(index, 1); // Remove the record so it can be replaced after editing
+    this.checkIfUserCanEditOrDelete().then(canEdit => {
+      if (canEdit) {
+        const record = this.records[index];
+        this.pregnancyForm.patchValue(record);
+        this.records.splice(index, 1); // Remove the record so it can be replaced after editing
+      } else {
+        this.error = 'You do not have permission to edit this record. You can only modify your own records.';
+      }
+    });
   }
 
   onDeleteRecord(index: number) {
-    const record = this.records[index];
-    const confirmed = confirm('Are you sure you want to delete this record?');
-
-    if (confirmed && record.id && this.motherId) {
-      this.mothersService.deletePrenatalRecord(this.motherId, record.id)
-        .then(() => {
-          this.records.splice(index, 1);
-          this.successMessage = 'Record deleted successfully!';
-          setTimeout(() => this.successMessage = '', 2000);
-        })
-        .catch(error => {
-          console.error(error);
-          this.error = 'Failed to delete the record.';
-        });
-    }
+    this.checkIfUserCanEditOrDelete().then(canDelete => {
+      if (canDelete) {
+        const record = this.records[index];
+        const confirmed = confirm('Are you sure you want to delete this record?');
+        if (confirmed && record.id && this.motherId) {
+          this.mothersService.deletePrenatalRecord(this.motherId, record.id)
+            .then(() => {
+              this.records.splice(index, 1);
+              this.successMessage = 'Record deleted successfully!';
+              setTimeout(() => this.successMessage = '', 2000);
+            })
+            .catch(error => {
+              console.error(error);
+              this.error = 'Failed to delete the record.';
+            });
+        }
+      } else {
+        this.error = 'You do not have permission to delete this record. You can only delete your own records.';
+      }
+    });
   }
 
 
 
-  onSubmit() {
-    if (!this.motherId) {
-      this.error = 'Mother ID is missing.';
+onSubmit() {
+  if (!this.motherId) {
+    this.error = 'Mother ID is missing.';
+    return;
+  }
+
+  // Retrieve the logged-in user's UID from AuthService
+  this.authService.getCurrentUserId().then(uid => {
+    if (!uid) {
+      this.error = 'User not logged in.';
       return;
     }
 
     const formValue = this.pregnancyForm.value;
+    formValue.uid = uid; // Add the logged-in user's UID to the form data
 
-    this.mothersService.addPrenatalRecord(this.motherId, formValue)
-      .then((res) => {
-        this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
-        this.pregnancyForm.reset({
-          date: new Date().toISOString().split('T')[0]
+    // Ensure motherId is not null before proceeding
+    if (this.motherId) {
+      // Proceed with adding the prenatal record to Firestore
+      this.mothersService.addPrenatalRecord(this.motherId, formValue)
+        .then((res) => {
+          this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
+          this.pregnancyForm.reset({
+            date: new Date().toISOString().split('T')[0]
+          });
+          this.error = null;
+          this.successMessage = 'Record saved successfully!';
+          setTimeout(() => this.successMessage = '', 2000);
+        })
+        .catch(error => {
+          console.error(error);
+          this.error = 'Failed to save the prenatal record.';
         });
-        this.error = null;
-        this.successMessage = 'Record saved successfully!';
-        setTimeout(() => this.successMessage = '', 2000);
-      })
-      .catch(error => {
-        console.error(error);
-        this.error = 'Failed to save the prenatal record.';
-      });
-  }
+    } else {
+      this.error = 'Mother ID is missing or invalid.';
+    }
+  });
+}
 
 
 

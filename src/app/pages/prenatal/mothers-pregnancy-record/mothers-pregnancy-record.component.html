@@ -72,20 +72,22 @@
     </form>
   </div>
 
-  <!-- Submitted Records Section -->
-  <div *ngIf="showSubmittedRecords" class="mt-6">
-    <h3 class="text-lg font-semibold mb-2 text-blue-700">Submitted Records</h3>
+<!-- Submitted Records Section -->
+<div *ngIf="showSubmittedRecords" class="mt-6">
+  <h3 class="text-lg font-semibold mb-2 text-blue-700">Submitted Records</h3>
 
-    <div *ngFor="let record of records; let i = index" class="bg-white shadow p-4 rounded-lg mb-3 border border-blue-100">
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-        <div *ngFor="let col of columns">
-          <span class="text-gray-600 text-sm">{{ col.label }}:</span>
-          <div class="font-medium text-gray-800">{{ record[col.key] || '-' }}</div>
-        </div>
+  <div *ngFor="let record of records; let i = index" class="bg-white shadow p-4 rounded-lg mb-3 border border-blue-100">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+      <div *ngFor="let col of columns">
+        <span class="text-gray-600 text-sm">{{ col.label }}:</span>
+        <div class="font-medium text-gray-800">{{ record[col.key] || '-' }}</div>
       </div>
+    </div>
 
-      <!-- Action buttons -->
-      <div class="flex justify-end gap-3 mt-4">
+    <!-- Action buttons -->
+    <div class="flex justify-end gap-3 mt-4">
+      <!-- Check if user has permission to edit or delete -->
+      <ng-container *ngIf="canEditOrDelete(record); else noPermission">
         <button
           class="px-3 py-1 text-sm font-medium text-blue-700 border border-blue-300 rounded hover:bg-blue-100 transition"
           (click)="onEditRecord(i)">
@@ -96,8 +98,15 @@
           (click)="onDeleteRecord(i)">
           Delete
         </button>
-      </div>
+      </ng-container>
+
+      <!-- No Permission message -->
+      <ng-template #noPermission>
+        <span class="cursor-pointer px-3 py-1 text-sm font-medium text-red-500 border border-red-300 rounded hover:bg-red-100 transition">You cannot edit or delete this record.</span>
+      </ng-template>
     </div>
   </div>
+</div>
+
 
 </div>

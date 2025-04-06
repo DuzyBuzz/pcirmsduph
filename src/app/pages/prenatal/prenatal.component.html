@@ -85,6 +85,12 @@
             Spouse:
             <span class="font-medium text-gray-700">{{ mother.spouseName || 'N/A' }}</span>
           </p>
+          <!--hospital -->
+          <p class="text-gray-600 text-sm">
+            Hospital:
+            <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
+          </p>
+
         </div>
 
         <!-- Action Toggle + Buttons -->
@@ -97,13 +103,13 @@
           <!-- Buttons (Edit/Delete) -->
           <div *ngIf="selectedMotherId === mother.id" class="flex items-center space-x-2 transition-all duration-300 ease-in-out">
             <!-- Edit Button -->
-            <button (click)="openEditForm(mother)" class="w-auto p-2 bg-yellow-500 text-white hover:bg-yellow-600 rounded-lg transition-all duration-300 ease-in-out">
-              <span class="material-icons">✏️</span>
+            <button (click)="openEditForm(mother)" class="px-3 py-1 text-sm font-medium text-blue-700 border border-blue-300 rounded hover:bg-blue-100 transition">
+              <span class="material-icons">Edit</span>
             </button>
 
             <!-- Delete Button -->
-            <button (click)="openDeleteModal(mother)" class="w-auto p-2 bg-red-500 text-white hover:bg-red-600 rounded-lg transition-all duration-300 ease-in-out">
-              <span class="material-icons">🗑️</span>
+            <button (click)="openDeleteModal(mother)" class="px-3 py-1 text-sm font-medium text-red-700 border border-red-300 rounded hover:bg-red-100 transition">
+              <span class="material-icons">Delete</span>
             </button>
           </div>
         </div>

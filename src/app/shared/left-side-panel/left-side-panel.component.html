@@ -1,8 +1,41 @@
+<!-- Logo + Navigation: Hidden (w-0 h-0) on mobile, visible on md and up -->
+<div
+  class="flex flex-col items-center mb-6 space-y-2 fixed top-4 left-4 z-[9999] pointer-events-auto
+         w-0 h-0 overflow-hidden md:w-auto md:h-auto"
+>
+  <!-- Logo -->
+  <img
+    src="assets/images/immune-system.png"
+    alt="Menu Icon"
+    class="w-12 h-12 object-contain rounded-full bg-sky-300 shadow-lg"
+  />
+  <h2 class="text-3xl font-black text-teal-700 drop-shadow">PCRIM</h2>
+
+  <!-- Navigation -->
+  <nav class="flex flex-col space-y-3 mt-4">
+    <button routerLink="/ob-gyne/appointments"
+      class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+      Appointments
+    </button>
+    <button routerLink="/ob-gyne/prenatal" routerLinkActive="active"
+      class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+      Prenatal
+    </button>
+    <button routerLink="/ob-gyne/children" routerLinkActive="active"
+      class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+      Children
+    </button>
+    <button
+      class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+      Messages
+    </button>
+  </nav>
+</div>
+
+
 <!-- Gesture Container with HammerJS Swipe Support -->
 <div
   class="relative w-full h-full overflow-hidden "
-  (swipeleft)="onSwipeLeft()"
-  (swiperight)="onSwipeRight()"
 >
 
   <!-- Sidebar Toggle Button (Already existing) -->
@@ -33,31 +66,30 @@
 >
 
 
-    <!-- Logo -->
-    <div class="flex flex-col items-center mb-6 space-y-2">
-      <img src="assets/images/immune-system.png" alt="Menu Icon" class="w-12 h-12 object-contain rounded-full bg-sky-300" />
-      <h2 class="text-3xl font-black text-teal-700">PCRIM</h2>
-    </div>
+<!-- Logo -->
+<div class="flex flex-col sticky items-center mb-6 space-y-2 md:w-0 md:h-0 md:overflow-hidden">
+  <img src="assets/images/immune-system.png" alt="Menu Icon" class="w-12 h-12 object-contain rounded-full bg-sky-300" />
+  <h2 class="text-3xl font-black text-teal-700">PCRIM</h2>
+</div>
 
-    <!-- Navigation -->
-    <nav class="flex flex-col space-y-3">
-      <button routerLink="/ob-gyne/appointments"
-        class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        Appointments
-      </button>
+<!-- Navigation -->
+<nav class="flex flex-col space-y-3 md:w-0 md:h-0 md:overflow-hidden">
+  <button routerLink="/ob-gyne/appointments"
+  class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+  Appointments
+</button>
+<button routerLink="/ob-gyne/prenatal" routerLinkActive="active"
+  class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+  Prenatal
+</button>
+<button routerLink="/ob-gyne/children" routerLinkActive="active"
+  class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+  Children
+</button>
+<button
+  class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition shadow">
+  Messages
+</button>
+</nav>
 
-      <button routerLink="/ob-gyne/prenatal" routerLinkActive="active"
-        class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        Prenatal
-      </button>
-      <button routerLink="/ob-gyne/children" routerLinkActive="active"
-        class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        Children
-      </button>
-
-      <button class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-100 rounded-lg transition">
-        Messages
-      </button>
-    </nav>
-  </div>
 </div>

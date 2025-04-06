@@ -58,4 +58,5 @@ getPrenatalRecords(motherId: string): Promise<{ id: string, data: any }[]> {
   getAllMothers(): Observable<any[]> {
     return new Observable<any[]>(); // Implement later if needed
   }
+
 }
