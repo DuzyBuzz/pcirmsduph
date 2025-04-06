@@ -3,19 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-prenatal-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './prenatal-form.component.html',
-  styleUrls: ['./prenatal-form.component.scss']
 })
 export class PrenatalFormComponent implements OnInit {
   motherForm!: FormGroup;
   emergencyForm!: FormGroup;
   showEmergency = false;
+  showMotherConfirmModal = false;
+  showFinalConfirmModal = false;
+
   auth = inject(Auth);
+  notificationMessage = '';
+  notificationType: 'success' | 'error' = 'success';
   mothers: any[] = [];
 
   emergencyFields = [
@@ -27,7 +32,7 @@ export class PrenatalFormComponent implements OnInit {
     { name: 'fatherContact', label: 'Father’s Contact Number', type: 'tel' },
   ];
 
-  constructor(private fb: FormBuilder, private firestore: Firestore) {}
+  constructor(private fb: FormBuilder, private firestore: Firestore, private router: Router) {}
 
   ngOnInit(): void {
     this.motherForm = this.fb.group({
@@ -60,51 +65,73 @@ export class PrenatalFormComponent implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
-  submitMother(): void {
+  openMotherConfirmationModal(): void {
     if (this.motherForm.invalid) {
       this.motherForm.markAllAsTouched();
       return;
     }
+    this.showMotherConfirmModal = true;
+  }
+
+  confirmMotherInfo(): void {
+    this.showMotherConfirmModal = false;
     this.showEmergency = true;
+  }
+
+  cancelMotherConfirmation(): void {
+    this.showMotherConfirmModal = false;
+  }
+
+  backToMotherForm(): void {
+    this.showEmergency = false;
+  }
+
+  openFinalConfirmationModal(): void {
+    if (!this.atLeastOneEmergency()) {
+      this.notificationMessage = 'Please provide at least one emergency contact.';
+      this.notificationType = 'error';
+      return;
+    }
+    this.showFinalConfirmModal = true;
+  }
+
+  cancelFinalConfirmation(): void {
+    this.showFinalConfirmModal = false;
+  }
+
+  async confirmFinalInfo(): Promise<void> {
+    this.showFinalConfirmModal = false;
+    const motherInfo = this.motherForm.value;
+    const emergencyInfo = this.emergencyForm.value;
+    const data = { ...motherInfo, ...emergencyInfo };
+
+    try {
+      const ref = collection(this.firestore, 'mothers');
+      await addDoc(ref, data);
+
+      this.notificationMessage = 'Mother and emergency info saved successfully!';
+      this.notificationType = 'success';
+
+      this.motherForm.reset();
+      this.emergencyForm.reset();
+      this.showEmergency = false;
+
+      this.loadMothers();
+    } catch (error) {
+      console.error(error);
+      this.notificationMessage = 'Failed to save data. Please try again.';
+      this.notificationType = 'error';
+    }
+
+    setTimeout(() => {
+      this.notificationMessage = '';
+      this.router.navigate(['/ob-gyne/prenatal']);
+    }, 4000);
   }
 
   atLeastOneEmergency(): boolean {
     const { spouseContact, parentContact, fatherContact } = this.emergencyForm.value;
     return !!(spouseContact || parentContact || fatherContact);
-  }
-
-  async submitAll(): Promise<void> {
-    if (!this.atLeastOneEmergency()) {
-      alert('Please provide at least one emergency contact.');
-      return;
-    }
-
-    const currentUser = this.auth.currentUser;
-    if (!currentUser) {
-      console.error('No authenticated user.');
-      return;
-    }
-
-    try {
-      const data = {
-        ...this.motherForm.value,
-        ...this.emergencyForm.value,
-        uid: currentUser.uid,
-        createdAt: new Date().toISOString()
-      };
-
-      const ref = collection(this.firestore, 'mothers');
-      await addDoc(ref, data);
-
-      alert('Mother and emergency info saved successfully!');
-      this.motherForm.reset();
-      this.emergencyForm.reset();
-      this.showEmergency = false;
-      this.loadMothers();
-    } catch (error) {
-      console.error('Error saving data:', error);
-      alert('Something went wrong while saving. Please try again.');
-    }
   }
 
   loadMothers(): void {

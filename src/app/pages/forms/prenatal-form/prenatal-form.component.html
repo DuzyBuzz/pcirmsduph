@@ -1,14 +1,17 @@
 <div class="flex-1 p-6 bg-slate-50 h-fit rounded-lg">
   <!-- Mother's Info Form -->
   <form
+    *ngIf="!showEmergency"
     [formGroup]="motherForm"
-    (ngSubmit)="submitMother()"
+    (ngSubmit)="openMotherConfirmationModal()"
     class="space-y-6 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
     novalidate
   >
-    <h2 class="text-2xl font-bold text-blue-700 border-b border-blue-100 pb-2">
-      Mother's Information
-    </h2>
+    <div *ngIf="notificationMessage" [ngClass]="notificationType === 'success' ? 'bg-green-500 text-white border-green-300' : 'bg-red-100 text-red-700 border-red-300'" class="mb-4 p-4 rounded-xl border text-sm font-medium shadow-sm">
+      {{ notificationMessage }}
+    </div>
+
+    <h2 class="text-2xl font-bold text-blue-700 border-b border-blue-100 pb-2">Mother's Information</h2>
 
     <div class="grid md:grid-cols-2 gap-6">
       <!-- Full Name -->
@@ -122,7 +125,7 @@
       </div>
     </div>
 
-    <div class="text-center justify-center">
+    <div class="text-center">
       <button
         type="submit"
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition disabled:opacity-50"
@@ -137,7 +140,7 @@
   <form
     *ngIf="showEmergency"
     [formGroup]="emergencyForm"
-    (ngSubmit)="submitAll()"
+    (ngSubmit)="openFinalConfirmationModal()"
     class="space-y-6 mt-10 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
     novalidate
   >
@@ -158,7 +161,8 @@
       </ng-container>
     </div>
 
-    <div class="text-center justify-center">
+    <div class="text-center flex justify-between mt-6">
+      <button type="button" class="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800" (click)="backToMotherForm()">Back</button>
       <button
         type="submit"
         class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition disabled:opacity-50"
@@ -168,4 +172,49 @@
       </button>
     </div>
   </form>
+
+  <!-- Confirm Mother's Info Modal -->
+  <div *ngIf="showMotherConfirmModal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-xl w-full shadow-lg border border-blue-200">
+      <h3 class="text-xl font-semibold text-blue-700 mb-4">Confirm Mother's Info</h3>
+      <div class="space-y-1 text-gray-700 text-sm">
+        <p><strong>Name:</strong> {{ motherForm.value.name }}</p>
+        <p><strong>Address:</strong> {{ motherForm.value.homeAddress }}</p>
+        <p><strong>Contact:</strong> {{ motherForm.value.contactNumber }}</p>
+        <p><strong>Age:</strong> {{ motherForm.value.age }}</p>
+        <p><strong>G:</strong> {{ motherForm.value.g }}</p>
+        <p><strong>P:</strong> {{ motherForm.value.p }}</p>
+        <p><strong>Hx:</strong> {{ motherForm.value.hx }}</p>
+        <p><strong>LMP:</strong> {{ motherForm.value.lmp }}</p>
+        <p><strong>Due Date:</strong> {{ motherForm.value.dueDate }}</p>
+        <p><strong>Ultrasound:</strong> {{ motherForm.value.ultrasound }}</p>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button class="px-4 py-2 bg-gray-200 rounded-xl text-gray-700 hover:bg-gray-300" (click)="cancelMotherConfirmation()">Cancel</button>
+        <button class="px-4 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700" (click)="confirmMotherInfo()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm All Info Modal -->
+  <div *ngIf="showFinalConfirmModal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-xl w-full shadow-lg border border-green-200">
+      <h3 class="text-xl font-semibold text-green-700 mb-4">Confirm All Information</h3>
+      <div class="space-y-2 text-sm text-gray-700">
+        <p class="font-semibold text-blue-600">Mother's Info</p>
+        <p><strong>Name:</strong> {{ motherForm.value.name }}</p>
+        <p><strong>Age:</strong> {{ motherForm.value.age }}</p>
+        <p class="font-semibold text-red-600 mt-2">Emergency Contacts</p>
+        <div *ngFor="let field of emergencyFields">
+          <p><strong>{{ field.label }}:</strong> {{ emergencyForm.value[field.name] }}</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button class="px-4 py-2 bg-gray-200 rounded-xl text-gray-700 hover:bg-gray-300" (click)="cancelFinalConfirmation()">Cancel</button>
+        <button class="px-4 py-2 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700" (click)="confirmFinalInfo()">Save</button>
+      </div>
+    </div>
+  </div>
 </div>

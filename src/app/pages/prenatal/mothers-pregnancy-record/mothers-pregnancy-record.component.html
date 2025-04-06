@@ -31,58 +31,73 @@
       class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-xl shadow transition"
       (click)="toggleSubmittedView()"
     >
-      {{ showSubmittedRecords ? 'Back to Prenatal Form' : 'Show Submitted Prenatal Records' }}
+      {{ showSubmittedRecords ? 'Prenatal Form' : 'Show Prenatal Records' }}
     </button>
   </div>
 
-  <!-- Form Layout -->
-
-
-  <div *ngIf="!showSubmittedRecords" class="h-full">
-    <div *ngIf="successMessage" class="p-4 mb-4 text-green-800 border border-green-300 rounded-lg bg-green-50 justify-center items-center" role="alert">
-      <span class="font-medium">Success!</span> {{ successMessage }}
-    </div>
-
-    <div *ngIf="error" class="p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
-      <span class="font-medium">Error:</span> {{ error }}
-    </div>
-    <form [formGroup]="pregnancyForm" (ngSubmit)="onSubmit()" class="justify-center items-center h-full">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 h-full">
-        <div *ngFor="let col of columns" class="flex flex-col">
-          <label [for]="col.key" class="font-semibold text-xs text-gray-700 mb-1">{{ col.label }}</label>
-          <input
-            [type]="col.type"
-            [formControlName]="col.key"
-            [placeholder]="col.placeholder"
-            [id]="col.key"
-            class="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-      </div>
-
-      <div class="flex justify-center mt-4">
-        <button
-          type="submit"
-          [disabled]="pregnancyForm.invalid"
-          class="bg-blue-500 text-white px-6 py-2 rounded-xl hover:bg-blue-600 transition"
-        >
-          Save Record
-        </button>
-      </div>
-    </form>
+<!-- FORM SECTION -->
+<div *ngIf="!showSubmittedRecords" class="h-full p-4 bg-slate-50 rounded-xl">
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="p-4 mb-4 text-white bg-green-500 border border-green-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
+    <span class="font-semibold">Success!</span> {{ successMessage }}
   </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="p-4 mb-4 text-red-800 bg-red-50 border border-red-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
+    <span class="font-semibold">Error:</span> {{ error }}
+  </div>
+
+  <!-- Pregnancy Form -->
+  <form [formGroup]="pregnancyForm" (ngSubmit)="openConfirmModal()" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div *ngFor="let col of columns" class="flex flex-col">
+        <label [for]="col.key" class="text-sm font-medium text-gray-700 mb-1">{{ col.label }}</label>
+        <input
+          [type]="col.type"
+          [formControlName]="col.key"
+          [placeholder]="col.placeholder"
+          [id]="col.key"
+          class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+        />
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-center">
+      <button
+        type="submit"
+        [disabled]="pregnancyForm.invalid"
+        class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition disabled:opacity-50"
+      >
+        Save Record
+      </button>
+    </div>
+  </form>
+</div>
+
 
 <!-- Submitted Records Section -->
 <div *ngIf="showSubmittedRecords" class="mt-6">
-  <h3 class="text-lg font-semibold mb-2 text-blue-700">Submitted Records</h3>
+  <h3 class="text-lg font-semibold mb-2 text-blue-700">{{motherData?.name}} Prenatal Records</h3>
+<!-- Loading Message -->
+<div *ngIf="loading" class="text-center text-blue-600 font-medium mb-4">
+  Fetching patient prenatal records...
+</div>
 
-  <div *ngFor="let record of records; let i = index" class="bg-white shadow p-4 rounded-lg mb-3 border border-blue-100">
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-      <div *ngFor="let col of columns">
-        <span class="text-gray-600 text-sm">{{ col.label }}:</span>
-        <div class="font-medium text-gray-800">{{ record[col.key] || '-' }}</div>
-      </div>
+<!-- No Records Found -->
+<div *ngIf="noRecordsFound && !loading" class="text-center text-red-500 font-semibold mb-4">
+  No prenatal records found.
+</div>
+
+<!-- Prenatal Records List -->
+<div *ngFor="let record of records; let i = index" class="bg-white shadow p-4 rounded-lg mb-3 border border-blue-100">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+    <div *ngFor="let col of columns">
+      <span class="text-gray-600 text-sm">{{ col.label }}:</span>
+      <div class="font-medium text-gray-800">{{ record[col.key] || '-' }}</div>
     </div>
+  </div>
+
 
     <!-- Action buttons -->
     <div class="flex justify-end gap-3 mt-4">
@@ -109,4 +124,32 @@
 </div>
 
 
+</div>
+
+
+
+
+
+
+
+
+<!-- CONFIRMATION MODAL -->
+<div *ngIf="showConfirmationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-lg p-6 max-w-7xl mx-4 w-full">
+    <h2 class="text-lg font-semibold mb-4 text-center">Confirm Your Details</h2>
+
+    <!-- Modal Content - 3 Column Layout -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div *ngFor="let col of columns" class="flex flex-col">
+        <div class="font-medium text-gray-700 mb-1">{{ col.label }}:</div>
+        <div class="text-sm text-gray-500">{{ formDataPreview[col.key] || 'N/A' }}</div>
+      </div>
+    </div>
+
+    <!-- Modal Buttons -->
+    <div class="mt-6 flex justify-end gap-4">
+      <button (click)="cancelConfirmation()" class="text-gray-500 bg-gray-100 px-4 py-2 rounded-xl">Cancel</button>
+      <button (click)="confirmAndSubmit()" class="bg-blue-600 text-white px-6 py-2 rounded-xl">Confirm & Submit</button>
+    </div>
+  </div>
 </div>

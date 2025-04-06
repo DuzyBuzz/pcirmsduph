@@ -31,7 +31,9 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   userDetails: any = {}; // To store user details
   error: string | null = null;
   loading = true;
-
+  noPatientFound = false;
+  notificationMessage: string = '';
+  notificationType: 'success' | 'error' = 'success';
 
 
   toggleActionButtons(motherId: string) {
@@ -47,10 +49,19 @@ export class PrenatalComponent implements OnInit, OnDestroy {
     private firestore: Firestore,
     private renderer: Renderer2,
     private el: ElementRef,
-    
+
   ) {}
 
   ngOnInit(): void {
+    this.fetchMothers();
+
+    // Set timeout for 1 minute to show "no patient found"
+    setTimeout(() => {
+      if (this.loading && this.mothers.length === 0) {
+        this.noPatientFound = true;
+        this.loading = false;
+      }
+    }, 60000); // 60 seconds
     this.motherForm = this.fb.group({
       name: ['', Validators.required],
       homeAddress: ['', Validators.required],
@@ -58,6 +69,7 @@ export class PrenatalComponent implements OnInit, OnDestroy {
       lastMenstruationDate: ['', Validators.required],
       dueDate: ['', Validators.required]
     });
+
 
     this.emergencyForm = this.fb.group({
       spouseName: [''],
@@ -71,7 +83,14 @@ export class PrenatalComponent implements OnInit, OnDestroy {
     this.loadMothers();
     this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => this.onDocumentClick(event));
   }
-
+  fetchMothers() {
+    // Simulate async call (replace with actual Firestore call)
+    setTimeout(() => {
+      // this.mothers = []; // Test empty
+      // this.mothers = [mock data]; // For testing with values
+      this.loading = false;
+    }, 2000); // simulate fetch delay
+  }
   ngOnDestroy(): void {
     if (this.clickListener) {
       this.clickListener();
@@ -81,6 +100,7 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   selectMother(motherId: string): void {
     this.selectedMotherId = motherId;
     console.log('Selected Mother ID parent:', this.selectedMotherId);
+    console.log('User ID:', this.userDetails);
 
     this.isSidebarHidden = true; // hide the sidebar and show pregnancy record component
   }
@@ -120,18 +140,32 @@ export class PrenatalComponent implements OnInit, OnDestroy {
       const emergencyInfo = this.emergencyForm.value;
       const data = { ...motherInfo, ...emergencyInfo };
 
-      const ref = collection(this.firestore, 'mothers');
-      await addDoc(ref, data);
+      try {
+        const ref = collection(this.firestore, 'mothers');
+        await addDoc(ref, data);
 
-      alert('Mother and emergency info saved successfully!');
-      this.motherForm.reset();
-      this.emergencyForm.reset();
-      this.showEmergency = false;
+        this.notificationMessage = 'Mother and emergency info saved successfully!';
+        this.notificationType = 'success';
 
-      this.loadMothers(); // reload list
+        this.motherForm.reset();
+        this.emergencyForm.reset();
+        this.showEmergency = false;
+
+        this.loadMothers();
+      } catch (error) {
+        console.error(error);
+        this.notificationMessage = 'Failed to save data. Please try again.';
+        this.notificationType = 'error';
+      }
     } else {
-      alert('Please provide at least one emergency contact.');
+      this.notificationMessage = 'Please provide at least one emergency contact.';
+      this.notificationType = 'error';
     }
+
+    // Clear the message after 4 seconds
+    setTimeout(() => {
+      this.notificationMessage = '';
+    }, 4000);
   }
 
   openDeleteModal(mother: any): void {

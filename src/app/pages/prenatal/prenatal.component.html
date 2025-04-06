@@ -66,13 +66,20 @@
     </button>
   </div>
 
-
+<!-- Status Messages -->
+<div *ngIf="loading" class="text-center text-blue-600 font-medium">
+  Fetching patient...
+</div>
+<div *ngIf="noPatientFound && !loading" class="text-center text-red-500 font-semibold">
+  No patient found.
+</div>
   <!-- Mother List Container -->
   <div class="flex-1 max-h-[590px] overflow-y-auto space-y-4 pr-1">
     <div *ngFor="let mother of filteredMothers()" class="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition duration-300 ease-in-out">
       <!-- Top Row -->
       <div class="flex justify-between items-start">
         <div class="flex flex-col space-y-1">
+
 
           <!-- Mother Name -->
           <p class="text-blue-800 font-semibold text-lg cursor-pointer" (click)="selectMother(mother.id)">
