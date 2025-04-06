@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { MothersService } from './mother-service.service';
 
-import { MotherServiceService } from './mother-service.service';
 
 describe('MotherServiceService', () => {
-  let service: MotherServiceService;
+  let service: MothersService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(MotherServiceService);
+    service = TestBed.inject(MothersService);
   });
 
   it('should be created', () => {

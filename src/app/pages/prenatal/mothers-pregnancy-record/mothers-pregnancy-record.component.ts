@@ -18,6 +18,8 @@ export class MothersPregnancyRecordComponent implements OnInit {
   loading = true;
   @Input() motherId: string | null = null;  // motherId as an Input
   error: string | null = null; // Error property to show error messages
+  successMessage: string | null = null;
+
 
   columns = [
     { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
@@ -60,10 +62,10 @@ export class MothersPregnancyRecordComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.motherId) {
-      // Use the motherId directly passed via Input()
       this.mothersService.getMotherById(this.motherId).subscribe({
         next: (data) => {
           this.motherData = data;
+          this.loadPrenatalRecords(); // load the records
           this.loading = false;
         },
         error: (err) => {
@@ -76,6 +78,13 @@ export class MothersPregnancyRecordComponent implements OnInit {
       this.loading = false;
     }
   }
+
+  loadPrenatalRecords() {
+    this.mothersService.getPrenatalRecords(this.motherId!).then(records => {
+      this.records = records.map(rec => ({ id: rec.id, ...rec.data }));
+    });
+  }
+
 
   initializeFormControls() {
     for (const column of this.columns) {
@@ -90,10 +99,56 @@ export class MothersPregnancyRecordComponent implements OnInit {
     this.showSubmittedRecords = !this.showSubmittedRecords;
   }
 
-  onSubmit() {
-    this.records.push(this.pregnancyForm.value);  // Add the form value to records
-    this.pregnancyForm.reset({
-      date: new Date().toISOString().split('T')[0]  // Reset date field
-    });
+  onEditRecord(index: number) {
+    const record = this.records[index];
+    this.pregnancyForm.patchValue(record);
+    this.records.splice(index, 1); // Remove the record so it can be replaced after editing
   }
+
+  onDeleteRecord(index: number) {
+    const record = this.records[index];
+    const confirmed = confirm('Are you sure you want to delete this record?');
+
+    if (confirmed && record.id && this.motherId) {
+      this.mothersService.deletePrenatalRecord(this.motherId, record.id)
+        .then(() => {
+          this.records.splice(index, 1);
+          this.successMessage = 'Record deleted successfully!';
+          setTimeout(() => this.successMessage = '', 2000);
+        })
+        .catch(error => {
+          console.error(error);
+          this.error = 'Failed to delete the record.';
+        });
+    }
+  }
+
+
+
+  onSubmit() {
+    if (!this.motherId) {
+      this.error = 'Mother ID is missing.';
+      return;
+    }
+
+    const formValue = this.pregnancyForm.value;
+
+    this.mothersService.addPrenatalRecord(this.motherId, formValue)
+      .then((res) => {
+        this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
+        this.pregnancyForm.reset({
+          date: new Date().toISOString().split('T')[0]
+        });
+        this.error = null;
+        this.successMessage = 'Record saved successfully!';
+        setTimeout(() => this.successMessage = '', 2000);
+      })
+      .catch(error => {
+        console.error(error);
+        this.error = 'Failed to save the prenatal record.';
+      });
+  }
+
+
+
 }

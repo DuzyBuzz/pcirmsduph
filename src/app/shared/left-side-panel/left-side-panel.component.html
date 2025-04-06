@@ -1,6 +1,6 @@
 <!-- Gesture Container with HammerJS Swipe Support -->
 <div
-  class="relative w-full h-full overflow-hidden"
+  class="relative w-full h-full overflow-hidden "
   (swipeleft)="onSwipeLeft()"
   (swiperight)="onSwipeRight()"
 >
@@ -21,16 +21,18 @@
     (click)="toggleMobileMenu()"
   ></div>
 
-  <!-- Sidebar Panel -->
-  <div
-    class="z-50 rounded-lg bg-slate-50 shadow-lg transform transition-transform duration-300 ease-in-out
-           fixed top-0 left-0 h-screen w-64 p-6
-           md:relative md:h-screen md:translate-x-0 md:shadow-none md:block"
-    [ngClass]="{
-      '-translate-x-full': !mobileMenuOpen,
-      'translate-x-0': mobileMenuOpen
-    }"
-  >
+<!-- Sidebar Panel -->
+<div
+  class="z-50 bg-slate-50 shadow-lg transform transition-transform duration-300 ease-in-out
+         fixed top-0 left-0 h-screen w-64 p-6
+         md:sticky md:top-0 md:h-screen md:w-64 md:block md:translate-x-0 md:shadow-none"
+  [ngClass]="{
+    '-translate-x-full': !mobileMenuOpen,
+    'translate-x-0': mobileMenuOpen
+  }"
+>
+
+
     <!-- Logo -->
     <div class="flex flex-col items-center mb-6 space-y-2">
       <img src="assets/images/immune-system.png" alt="Menu Icon" class="w-12 h-12 object-contain rounded-full bg-sky-300" />
