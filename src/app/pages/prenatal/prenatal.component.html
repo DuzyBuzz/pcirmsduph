@@ -76,7 +76,7 @@
 
           <!-- Mother Name -->
           <p class="text-blue-800 font-semibold text-lg cursor-pointer" (click)="selectMother(mother.id)">
-             {{ mother.name }}
+             <strong class="font-bold text-blue-900">Patient Name:</strong> {{ mother.name }}
           </p>
 
 
@@ -87,7 +87,15 @@
           </p>
           <!--hospital -->
           <p class="text-gray-600 text-sm">
-            Hospital:
+            Attendant Name:
+            <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
+          </p>
+          <p class="text-gray-600 text-sm">
+            Hospital Name:
+            <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
+          </p>
+          <p class="text-gray-600 text-sm">
+            Hospital Address:
             <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
           </p>
 

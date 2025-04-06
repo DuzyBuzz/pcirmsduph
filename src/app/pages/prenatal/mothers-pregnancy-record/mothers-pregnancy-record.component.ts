@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { MothersService } from '../../../services/mother/mother-service.service';
@@ -11,7 +11,7 @@ import { AuthService } from '../../../auth/auth.service';
   templateUrl: './mothers-pregnancy-record.component.html',
   styleUrls: ['./mothers-pregnancy-record.component.scss']
 })
-export class MothersPregnancyRecordComponent implements OnInit {
+export class MothersPregnancyRecordComponent implements OnChanges {
   pregnancyForm: FormGroup;
   records: any[] = [];
   motherData: any;
@@ -62,7 +62,7 @@ export class MothersPregnancyRecordComponent implements OnInit {
     this.initializeFormControls();
   }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     if (this.motherId) {
       this.mothersService.getMotherById(this.motherId).subscribe({
         next: (data) => {
