@@ -11,7 +11,8 @@ import { AuthService } from '../../../auth/auth.service';
   templateUrl: './mothers-pregnancy-record.component.html',
   styleUrls: ['./mothers-pregnancy-record.component.scss']
 })
-export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
+export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
+  currentUserUid: string | null = null;  // Allow null type
   pregnancyForm: FormGroup;
   records: any[] = [];
   motherData: any;
@@ -23,11 +24,11 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
   noRecordsFound = false;
   showConfirmationModal = false;
   formDataPreview: any = {}; // Holds form data for preview in modal
-
-
-
-
-
+  showDeleteModal: boolean = false;
+  selectedRecord: any = null;
+  confirmDate: string = '';
+  notificationMessage: string = '';
+  notificationType: string = '';
 
   columns = [
     { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
@@ -68,6 +69,7 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
     this.pregnancyForm = this.fb.group({});
     this.initializeFormControls();
   }
+
   ngOnInit() {
     this.loadRecords();
 
@@ -78,6 +80,8 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
         this.loading = false;
       }
     }, 60000); // 1 minute
+
+    this.getCurrentUserUid(); // Retrieve the current user's UID on component initialization
   }
 
   ngOnChanges(): void {
@@ -98,6 +102,17 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
       this.loading = false;
     }
   }
+
+  // Fetch currentUserUid as an async call
+  async getCurrentUserUid() {
+    try {
+      this.currentUserUid = await this.authService.getCurrentUserId();
+    } catch (error) {
+      this.error = 'Failed to fetch user UID.';
+    }
+  }
+ 
+
   loadRecords() {
     // Replace with actual Firestore fetch logic
     setTimeout(() => {
@@ -110,10 +125,9 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
   // Method to check if the logged-in user can edit or delete the record
   canEditOrDelete(record: any): boolean {
     // Compare the logged-in user's UID with the mother's UID
-    const currentUserId = this.authService.getCurrentUserId();
-    console.log(currentUserId)
-    return record.motherUid === currentUserId; // If they match, return true, otherwise false
+    return record.motherUid === this.currentUserUid; // Use the async fetched UID
   }
+
   openConfirmModal() {
     if (this.pregnancyForm.valid) {
       // Prepare form data for preview
@@ -121,7 +135,6 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
       this.showConfirmationModal = true;
     }
   }
-
 
   async checkIfUserCanEditOrDelete(): Promise<boolean> {
     const currentUserId = await this.authService.getCurrentUserId(); // Get current user's UID
@@ -133,7 +146,6 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
       this.records = records.map(rec => ({ id: rec.id, ...rec.data }));
     });
   }
-
 
   initializeFormControls() {
     for (const column of this.columns) {
@@ -152,8 +164,8 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
     this.checkIfUserCanEditOrDelete().then(canEdit => {
       if (canEdit) {
         const record = this.records[index];
-        this.pregnancyForm.patchValue(record);
-        this.records.splice(index, 1); // Remove the record so it can be replaced after editing
+        this.pregnancyForm.patchValue(record);  // Patch form with the record data
+        this.records.splice(index, 1);  // Remove the record so it can be replaced after editing
       } else {
         this.error = 'You do not have permission to edit this record. You can only modify your own records.';
       }
@@ -168,7 +180,7 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
         if (confirmed && record.id && this.motherId) {
           this.mothersService.deletePrenatalRecord(this.motherId, record.id)
             .then(() => {
-              this.records.splice(index, 1);
+              this.records.splice(index, 1);  // Remove the record from the list
               this.successMessage = 'Record deleted successfully!';
               setTimeout(() => this.successMessage = '', 2000);
             })
@@ -182,50 +194,48 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit{
       }
     });
   }
+
   cancelConfirmation() {
     this.showConfirmationModal = false;
   }
 
   confirmAndSubmit() {
-  if (!this.motherId) {
-    this.error = 'Mother ID is missing.';
-    return;
-  }
-
-  // Retrieve the logged-in user's UID from AuthService
-  this.authService.getCurrentUserId().then(uid => {
-    if (!uid) {
-      this.error = 'User not logged in.';
+    if (!this.motherId) {
+      this.error = 'Mother ID is missing.';
       return;
     }
 
-    const formValue = this.pregnancyForm.value;
-    formValue.uid = uid; // Add the logged-in user's UID to the form data
+    // Retrieve the logged-in user's UID from AuthService
+    this.authService.getCurrentUserId().then(uid => {
+      if (!uid) {
+        this.error = 'User not logged in.';
+        return;
+      }
 
-    // Ensure motherId is not null before proceeding
-    if (this.motherId) {
-      // Proceed with adding the prenatal record to Firestore
-      this.mothersService.addPrenatalRecord(this.motherId, formValue)
-        .then((res) => {
-          this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
-          this.pregnancyForm.reset({
-            date: new Date().toISOString().split('T')[0]
+      const formValue = this.pregnancyForm.value;
+      formValue.uid = uid; // Add the logged-in user's UID to the form data
+
+      // Ensure motherId is not null before proceeding
+      if (this.motherId) {
+        // Proceed with adding the prenatal record to Firestore
+        this.mothersService.addPrenatalRecord(this.motherId, formValue)
+          .then((res) => {
+            this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
+            this.pregnancyForm.reset({
+              date: new Date().toISOString().split('T')[0]
+            });
+            this.error = null;
+            this.successMessage = 'Record saved successfully!';
+            this.showConfirmationModal = false;
+            setTimeout(() => this.successMessage = '', 7000);
+          })
+          .catch(error => {
+            console.error(error);
+            this.error = 'Failed to save the prenatal record.';
           });
-          this.error = null;
-          this.successMessage = 'Record saved successfully!';
-          this.showConfirmationModal = false;
-          setTimeout(() => this.successMessage = '', 7000);
-        })
-        .catch(error => {
-          console.error(error);
-          this.error = 'Failed to save the prenatal record.';
-        });
-    } else {
-      this.error = 'Mother ID is missing or invalid.';
-    }
-  });
-}
-
-
-
+      } else {
+        this.error = 'Mother ID is missing or invalid.';
+      }
+    });
+  }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, doc, getDoc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 
@@ -101,9 +101,44 @@ export class PrenatalFormComponent implements OnInit {
 
   async confirmFinalInfo(): Promise<void> {
     this.showFinalConfirmModal = false;
+
+    // Get current user information
+    const user = this.auth.currentUser;
+
+    if (!user) {
+      this.notificationMessage = 'User not authenticated. Please log in again.';
+      this.notificationType = 'error';
+      return;
+    }
+
+    // Fetch user details from Firestore using the uid
+    const userRef = doc(this.firestore, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      this.notificationMessage = 'User data not found.';
+      this.notificationType = 'error';
+      return;
+    }
+
+    // Get mother and emergency information
     const motherInfo = this.motherForm.value;
     const emergencyInfo = this.emergencyForm.value;
-    const data = { ...motherInfo, ...emergencyInfo };
+
+    // Get user data from the Firestore document
+    const userData = userSnap.data();
+    const { name, hospitalAddress, hospitalName } = userData;
+
+    // Merge the forms and add extra user info
+    const data = {
+      ...motherInfo,
+      ...emergencyInfo,
+      uid: user.uid, // Keep the UID from the authenticated user
+      attendantName: name || '', // Add the fetched attendant name
+      hospitalAddress: hospitalAddress || '', // Add the fetched hospital address
+      hospitalName: hospitalName || '', // Add the fetched hospital name
+      createdAt: new Date(), // Timestamp for when the data is saved
+    };
 
     try {
       const ref = collection(this.firestore, 'mothers');

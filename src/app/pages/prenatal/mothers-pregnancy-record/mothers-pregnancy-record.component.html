@@ -18,7 +18,6 @@
 
 
 </div>
-
 <!-- Record Prenatal Container -->
 <div class="p-6 bg-white rounded-xl shadow-lg max-h-full">
   <div class="flex justify-between items-center mb-4">
@@ -36,45 +35,54 @@
   </div>
 
 <!-- FORM SECTION -->
-<div *ngIf="!showSubmittedRecords" class="h-full p-4 bg-slate-50 rounded-xl">
-  <!-- Success Message -->
-  <div *ngIf="successMessage" class="p-4 mb-4 text-white bg-green-500 border border-green-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
-    <span class="font-semibold">Success!</span> {{ successMessage }}
-  </div>
+<ng-container *ngIf="motherData.uid === currentUserUid; else noPermission">
 
-  <!-- Error Message -->
-  <div *ngIf="error" class="p-4 mb-4 text-red-800 bg-red-50 border border-red-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
-    <span class="font-semibold">Error:</span> {{ error }}
-  </div>
+  <div *ngIf="!showSubmittedRecords" class="h-full p-4 bg-slate-50 rounded-xl">
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="p-4 mb-4 text-white bg-green-500 border border-green-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
+      <span class="font-semibold">Success!</span> {{ successMessage }}
+    </div>
 
-  <!-- Pregnancy Form -->
-  <form [formGroup]="pregnancyForm" (ngSubmit)="openConfirmModal()" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div *ngFor="let col of columns" class="flex flex-col">
-        <label [for]="col.key" class="text-sm font-medium text-gray-700 mb-1">{{ col.label }}</label>
-        <input
-          [type]="col.type"
-          [formControlName]="col.key"
-          [placeholder]="col.placeholder"
-          [id]="col.key"
-          class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
-        />
+    <!-- Error Message -->
+    <div *ngIf="error" class="p-4 mb-4 text-red-800 bg-red-50 border border-red-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
+      <span class="font-semibold">Error:</span> {{ error }}
+    </div>
+
+    <!-- Pregnancy Form -->
+    <form [formGroup]="pregnancyForm" (ngSubmit)="openConfirmModal()" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let col of columns" class="flex flex-col">
+          <label [for]="col.key" class="text-sm font-medium text-gray-700 mb-1">{{ col.label }}</label>
+          <input
+            [type]="col.type"
+            [formControlName]="col.key"
+            [placeholder]="col.placeholder"
+            [id]="col.key"
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Submit Button -->
-    <div class="flex justify-center">
-      <button
-        type="submit"
-        [disabled]="pregnancyForm.invalid"
-        class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition disabled:opacity-50"
-      >
-        Save Record
-      </button>
-    </div>
-  </form>
-</div>
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button
+          type="submit"
+          [disabled]="pregnancyForm.invalid"
+          class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition disabled:opacity-50"
+        >
+          Save Record
+        </button>
+      </div>
+    </form>
+  </div>
 
+</ng-container>
+  <!-- No Permission message -->
+  <ng-template #noPermission>
+    <span class="cursor-not-allowed px-6 py-3 text-sm font-medium text-red-700 border-2 border-red-500 rounded-lg bg-red-50 hover:bg-red-200 transition-colors duration-300">
+      You do not have permission to modify the record for {{motherData.name}}.
+    </span>
+  </ng-template>
 
 <!-- Submitted Records Section -->
 <div *ngIf="showSubmittedRecords" class="mt-6">
@@ -99,27 +107,30 @@
   </div>
 
 
-    <!-- Action buttons -->
-    <div class="flex justify-end gap-3 mt-4">
-      <!-- Check if user has permission to edit or delete -->
-      <ng-container *ngIf="canEditOrDelete(record); else noPermission">
-        <button
-          class="px-3 py-1 text-sm font-medium text-blue-700 border border-blue-300 rounded hover:bg-blue-100 transition"
-          (click)="onEditRecord(i)">
-          Edit
-        </button>
-        <button
-          class="px-3 py-1 text-sm font-medium text-red-700 border border-red-300 rounded hover:bg-red-100 transition"
-          (click)="onDeleteRecord(i)">
-          Delete
-        </button>
-      </ng-container>
+<!-- Action buttons -->
+<div class="flex justify-end gap-3 mt-4">
+  <!-- Check if user has permission to edit or delete -->
+  <ng-container *ngIf="motherData.uid === currentUserUid; else noPermission">
+    <button
+      class="px-3 py-1 text-sm font-medium text-yellow-600 border border-yellow-300 rounded hover:bg-blue-100 transition"
+      (click)="onEditRecord(i)">
+      Edit
+    </button>
+    <button
+      class="px-3 py-1 text-sm font-medium text-red-700 border border-red-300 rounded hover:bg-red-100 transition"
+      (click)="onDeleteRecord(i)">
+      Delete
+    </button>
+  </ng-container>
 
-      <!-- No Permission message -->
-      <ng-template #noPermission>
-        <span class="cursor-pointer px-3 py-1 text-sm font-medium text-red-500 border border-red-300 rounded hover:bg-red-100 transition">You cannot edit or delete this record.</span>
-      </ng-template>
-    </div>
+  <!-- No Permission message -->
+  <ng-template #noPermission>
+    <span class="cursor-not-allowed px-5 py-2 text-sm font-medium text-red-600 border-2 border-red-400 rounded-lg bg-red-50 hover:bg-red-200 transition-colors duration-300">
+      Access is restricted to viewing only, as this patient is not assigned to you.
+    </span>
+  </ng-template>
+</div>
+
   </div>
 </div>
 
@@ -129,27 +140,3 @@
 
 
 
-
-
-
-
-<!-- CONFIRMATION MODAL -->
-<div *ngIf="showConfirmationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-lg p-6 max-w-7xl mx-4 w-full">
-    <h2 class="text-lg font-semibold mb-4 text-center">Confirm Your Details</h2>
-
-    <!-- Modal Content - 3 Column Layout -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <div *ngFor="let col of columns" class="flex flex-col">
-        <div class="font-medium text-gray-700 mb-1">{{ col.label }}:</div>
-        <div class="text-sm text-gray-500">{{ formDataPreview[col.key] || 'N/A' }}</div>
-      </div>
-    </div>
-
-    <!-- Modal Buttons -->
-    <div class="mt-6 flex justify-end gap-4">
-      <button (click)="cancelConfirmation()" class="text-gray-500 bg-gray-100 px-4 py-2 rounded-xl">Cancel</button>
-      <button (click)="confirmAndSubmit()" class="bg-blue-600 text-white px-6 py-2 rounded-xl">Confirm & Submit</button>
-    </div>
-  </div>
-</div>

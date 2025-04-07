@@ -1,161 +1,165 @@
+<!-- prenatal.component.html -->
 
 <div class="relative">
 
+  <!-- Toggle Sidebar Button -->
   <button (click)="toggleSidebar()" class="absolute top-4 left-4 bg-sky-400 text-white p-2 rounded-full shadow-md transition-transform">
-    <img *ngIf="!isSidebarHidden" src="assets/images/extract.png" alt="Arrow Back" class="w-6 h-6 -top-0 left-0" />
-    <img *ngIf="isSidebarHidden" src="assets/images/compress.png" alt="Arrow Back" class="w-6 h-6 top-0 left-0" />
+    <img *ngIf="!isSidebarHidden" src="assets/images/extract.png" alt="Hide Sidebar" class="w-6 h-6" />
+    <img *ngIf="isSidebarHidden" src="assets/images/compress.png" alt="Show Sidebar" class="w-6 h-6" />
   </button>
 
-<!-- Sidebar -->
-<aside
-  class="h-full overflow-y-auto bg-gradient-to-br from-slate-50 to-slate-100 border-r w-full border-blue-200 rounded-xl p-6 shadow-sm flex flex-col transition-all duration-300 ease-in-out"
-  [ngClass]="{
-    'w-0 h-0 opacity-5 overflow-hidden rounded-3xl bg-transparent pointer-events-none absolute ease-in-out': isSidebarHidden,
-    'w-full h-full opacity-100 pointer-events-auto ease-in-out': !isSidebarHidden
-  }">
+  <!-- Sidebar -->
+  <aside
+    class="h-full overflow-y-auto bg-gradient-to-br from-slate-50 to-slate-100 border-r border-blue-200 rounded-xl p-6 shadow-sm transition-all duration-300"
+    [ngClass]="{
+      'w-0 h-0 opacity-5 overflow-hidden bg-transparent pointer-events-none absolute': isSidebarHidden,
+      'w-full opacity-100 pointer-events-auto': !isSidebarHidden
+    }"
+  >
 
-  <h2 class="text-2xl font-bold text-blue-700 mb-6 text-center" *ngIf="!isSidebarHidden">Prenatal Patients</h2>
+    <h2 class="text-2xl font-bold text-blue-700 mb-6 text-center" *ngIf="!isSidebarHidden">
+      Prenatal Patients
+    </h2>
 
-  <div class="flex flex-wrap md:flex-nowrap items-end gap-4 mb-6">
+    <!-- Filters -->
+    <div class="flex flex-wrap md:flex-nowrap gap-4 mb-6">
+      <!-- Filter by Ownership -->
+      <div *ngIf="!isSidebarHidden" class="flex-1 min-w-[200px]">
+        <label class="block text-sm font-semibold text-blue-600 mb-1">Filter by Patient</label>
+        <button
+        (click)="toggleFilterByOwn()"
+        class="w-full p-2 border rounded-lg text-sm font-medium transition duration-300"
+        [ngClass]="{
+          'bg-blue-600 text-white border-blue-600': filterByOwn,
+          'bg-white text-blue-600 border-blue-200': !filterByOwn
+        }">
+        {{ filterByOwn ? 'My Patients' : 'All Patients' }}
+      </button>
 
 
-    <!-- Filter Option -->
-    <div *ngIf="!isSidebarHidden" class="flex-1 min-w-[200px]">
-      <label for="filter" class="block text-sm font-semibold text-blue-600 mb-1">Filter by Patient</label>
-      <select
-        [(ngModel)]="filterByOwn"
-        (ngModelChange)="onFilterChange()"
-        id="filter"
-        class="w-full p-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400"
+      </div>
+
+      <!-- Search -->
+      <div *ngIf="!isSidebarHidden" class="flex-1 min-w-[200px]">
+        <label class="block text-sm font-semibold text-blue-600 mb-1">Search Patient</label>
+        <input
+          [(ngModel)]="searchTerm"
+          type="text"
+          placeholder="Search by name"
+          class="w-full p-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+    </div>
+
+    <!-- Header & Add Button -->
+    <div class="flex flex-wrap md:flex-nowrap justify-between items-center mb-6">
+      <h3 *ngIf="!isSidebarHidden" class="text-lg font-semibold text-blue-600 mb-2 md:mb-0">
+        Registered Prenatal Patients
+      </h3>
+      <button
+        routerLink="/ob-gyne/prenatal-form"
+        class="px-6 h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl shadow-md transition"
       >
-        <option [value]="true">My Patients</option>
-        <option [value]="false">All Patients</option>
-      </select>
+        + Add Prenatal Patient
+      </button>
     </div>
 
-    <!-- Search Bar -->
-    <div *ngIf="!isSidebarHidden" class="flex-1 min-w-[200px]">
-      <label for="search" class="block text-sm font-semibold text-blue-600 mb-1">Search Patient</label>
-      <input
-        id="search"
-        [(ngModel)]="searchTerm"
-        type="text"
-        placeholder="Search by name"
-        class="w-full p-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400"
-      />
-    </div>
-  </div>
+    <!-- Loading / No Patients -->
+    <div *ngIf="loading" class="text-center text-blue-600 font-medium">Fetching patient...</div>
+    <div *ngIf="noPatientFound && !loading" class="text-center text-red-500 font-semibold">No patient found.</div>
 
+<!-- Mothers List -->
+<div class="max-h-[590px] overflow-y-auto space-y-4 pr-1">
+  <div *ngFor="let mother of filteredMothers()" class="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition">
+    <div class="flex justify-between items-start">
+      <!-- Mother Info -->
+      <div class="flex flex-col space-y-1">
+        <p class="text-blue-800 font-semibold text-lg cursor-pointer" (click)="selectMother(mother.id)">
+          <strong class="font-bold text-blue-900">Patient Name:</strong> {{ mother.name }}
+        </p>
+        <p class="text-gray-600 text-sm">Spouse: <span class="font-medium">{{ mother.spouseName || 'N/A' }}</span></p>
 
+        <!-- Display User Details based on Mother UID -->
+        <p class="text-gray-600 text-sm">Attendant: <span class="font-medium">{{ mother.attendantName || 'N/A' }}</span></p>
+        <p class="text-gray-600 text-sm">Hospital Name: <span class="font-medium">{{ mother.hospitalName || 'N/A' }}</span></p>
+        <p class="text-gray-600 text-sm">Hospital Address: <span class="font-medium">{{ mother.hospitalAddress || 'N/A' }}</span></p>
+      </div>
 
-
-  <div class="flex flex-wrap md:flex-nowrap items-center justify-between mb-6">
-    <!-- Heading -->
-    <h3
-      *ngIf="!isSidebarHidden"
-      class="text-lg font-semibold text-blue-600 border-b border-blue-200 pb-1 w-full md:w-auto mb-4 md:mb-0"
-    >
-      Registered Prenatal Patients
-    </h3>
-
-    <!-- Add Prenatal Button -->
-    <button
-      class="w-full md:w-auto px-6 h-12 bg-blue-500 hover:bg-blue-600 text-white text-base font-semibold rounded-xl shadow-md transition duration-300 ease-in-out"
-      routerLink="/ob-gyne/prenatal-form">
-      + Add Prenatal Patient
-    </button>
-  </div>
-
-<!-- Status Messages -->
-<div *ngIf="loading" class="text-center text-blue-600 font-medium">
-  Fetching patient...
-</div>
-<div *ngIf="noPatientFound && !loading" class="text-center text-red-500 font-semibold">
-  No patient found.
-</div>
-  <!-- Mother List Container -->
-  <div class="flex-1 max-h-[590px] overflow-y-auto space-y-4 pr-1">
-    <div *ngFor="let mother of filteredMothers()" class="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition duration-300 ease-in-out">
-      <!-- Top Row -->
-      <div class="flex justify-between items-start">
-        <div class="flex flex-col space-y-1">
-
-
-          <!-- Mother Name -->
-          <p class="text-blue-800 font-semibold text-lg cursor-pointer" (click)="selectMother(mother.id)">
-             <strong class="font-bold text-blue-900">Patient Name:</strong> {{ mother.name }}
-          </p>
-
-
-          <!-- Spouse Info -->
-          <p class="text-gray-600 text-sm">
-            Spouse:
-            <span class="font-medium text-gray-700">{{ mother.spouseName || 'N/A' }}</span>
-          </p>
-          <!--hospital -->
-          <p class="text-gray-600 text-sm">
-            Attendant Name:
-            <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
-          </p>
-          <p class="text-gray-600 text-sm">
-            Hospital Name:
-            <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
-          </p>
-          <p class="text-gray-600 text-sm">
-            Hospital Address:
-            <span class="font-medium text-gray-700">{{ userDetails.name || 'N/A' }}</span>
-          </p>
-
-        </div>
-
-        <!-- Action Toggle + Buttons -->
-        <div class="relative flex items-center space-x-2">
-          <!-- Toggle Button (chevron icon) -->
-          <button (click)="toggleActionButtons(mother.id)" class="p-2 w-10 h-10 text-green-500 hover:text-green-800 transition duration-300 ease-in-out flex justify-center items-center rounded-full">
-            <span class="text-3xl font-black">{{ selectedMotherId === mother.id ? '‹' : '›' }}</span>
+      <!-- Actions -->
+      <div class="relative flex items-center space-x-2">
+        <ng-container *ngIf="mother.uid === currentUserUid; else noPermission">
+          <button (click)="toggleActionButtons(mother.id)" class="p-2 w-10 h-10 text-green-500 hover:text-green-800 transition rounded-full">
+            <span class="text-3xl font-black">
+              {{ selectedMotherId === mother.id ? '‹' : '›' }}
+            </span>
           </button>
 
-          <!-- Buttons (Edit/Delete) -->
-          <div *ngIf="selectedMotherId === mother.id" class="flex items-center space-x-2 transition-all duration-300 ease-in-out">
-            <!-- Edit Button -->
-            <button (click)="openEditForm(mother)" class="px-3 py-1 text-sm font-medium text-blue-700 border border-blue-300 rounded hover:bg-blue-100 transition">
-              <span class="material-icons">Edit</span>
+          <div *ngIf="selectedMotherId === mother.id" class="flex items-center space-x-2">
+            <button (click)="openEditForm(mother)" class="px-3 py-1 text-sm font-medium text-yellow-600 border border-yellow-300 rounded hover:bg-blue-100 transition">
+              Edit
             </button>
-
-            <!-- Delete Button -->
             <button (click)="openDeleteModal(mother)" class="px-3 py-1 text-sm font-medium text-red-700 border border-red-300 rounded hover:bg-red-100 transition">
-              <span class="material-icons">Delete</span>
+              Delete
             </button>
           </div>
-        </div>
+        </ng-container>
       </div>
+
+      <!-- No Permission message -->
+      <ng-template #noPermission>
+        <span class="cursor-pointer px-3 py-1 text-sm font-medium text-red-500 border border-red-300 rounded hover:bg-red-100 transition">
+          You cannot edit or delete this record.
+        </span>
+      </ng-template>
     </div>
   </div>
+</div>
 
-  <!-- Permission Error Modal -->
-  <div *ngIf="showPermissionError" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-md w-96">
-      <h3 class="text-xl font-semibold text-red-600 mb-4">Permission Denied</h3>
-      <p class="mb-4">You do not have permission to edit or delete this record. This mother does not belong to your account.</p>
-      <div class="flex justify-end">
-        <button (click)="closePermissionError()" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Close</button>
-      </div>
+
+  </aside>
+
+  <!-- Permission Modal -->
+  <div *ngIf="showPermissionError" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+      <h2 class="text-red-600 font-semibold text-lg mb-4">Permission Denied</h2>
+      <p class="text-gray-700">You do not have permission to modify this record.</p>
+      <button (click)="closePermissionError()" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+        Close
+      </button>
     </div>
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div *ngIf="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 w-auto">
-    <div class="bg-white p-6 rounded-lg shadow-md w-96">
-      <h3 class="text-xl font-semibold text-red-600 mb-4">Delete Confirmation</h3>
-      <p class="mb-4">Are you sure you want to delete {{ selectedMother?.name }}? Please type the name below to confirm.</p>
-      <input type="text" [(ngModel)]="confirmName" [placeholder]="selectedMother?.name" class="input mb-4 border border-gray-300 rounded-lg p-2 w-full" />
-      <div class="flex justify-end space-x-4">
-        <button (click)="closeDeleteModal()" class="w-auto p-2 m-2 bg-gray-500 text-white hover:bg-gray-600 rounded-lg">Cancel</button>
-        <button (click)="deleteMother()" [disabled]="confirmName !== selectedMother?.name" class="w-auto p-2 m-2 bg-red-500 text-white hover:bg-red-600 rounded-lg">Delete</button>
+  <div *ngIf="showDeleteModal" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+      <h2 class="text-red-600 font-semibold text-lg mb-4">Confirm Deletion</h2>
+      <p class="mb-2">Please type the name of the patient to confirm deletion:</p>
+      <input
+      type="text"
+      [(ngModel)]="confirmName"
+      [placeholder]="selectedMother?.name"
+      class="w-full border border-gray-300 rounded p-2 mb-4" />
+
+
+
+      <div class="flex justify-center gap-4">
+        <button (click)="closeDeleteModal()" class="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">Cancel</button>
+        <button (click)="deleteMother()" class="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Delete</button>
       </div>
     </div>
   </div>
-</aside>
+
+  <!-- Notification -->
+  <div *ngIf="notificationMessage" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-md z-50 text-white"
+    [ngClass]="{
+      'bg-green-500': notificationType === 'success',
+      'bg-red-500': notificationType === 'error'
+    }">
+    {{ notificationMessage }}
+  </div>
+
+</div>
+
 <!-- Show record component after mother selected -->
 <app-mothers-pregnancy-record
   *ngIf="selectedMotherId"

@@ -1,8 +1,9 @@
-import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Firestore, collection, addDoc, collectionData, deleteDoc, doc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, deleteDoc, doc, docData  } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { inject } from '@angular/core';
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-prenatal',
@@ -10,7 +11,7 @@ import { inject } from '@angular/core';
   templateUrl: './prenatal.component.html',
   styleUrls: ['./prenatal.component.scss']
 })
-export class PrenatalComponent implements OnInit, OnDestroy {
+export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
   motherForm!: FormGroup;
   emergencyForm!: FormGroup;
   showEmergency = false;
@@ -34,6 +35,8 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   noPatientFound = false;
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
+  currentUserUid: string | null = null;
+
 
 
   toggleActionButtons(motherId: string) {
@@ -41,7 +44,6 @@ export class PrenatalComponent implements OnInit, OnDestroy {
   }
 
 
-  auth = inject(Auth); // Inject Firebase Authentication
   private clickListener!: () => void;
 
   constructor(
@@ -49,12 +51,18 @@ export class PrenatalComponent implements OnInit, OnDestroy {
     private firestore: Firestore,
     private renderer: Renderer2,
     private el: ElementRef,
+    private auth: Auth
 
   ) {}
+  ngOnChanges(): void {
+  }
 
   ngOnInit(): void {
     this.fetchMothers();
-
+    this.loadUserDetails();
+    this.auth.onAuthStateChanged(user => {
+      this.currentUserUid = user?.uid || null;
+    });
     // Set timeout for 1 minute to show "no patient found"
     setTimeout(() => {
       if (this.loading && this.mothers.length === 0) {
@@ -83,6 +91,10 @@ export class PrenatalComponent implements OnInit, OnDestroy {
     this.loadMothers();
     this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => this.onDocumentClick(event));
   }
+
+  toggleFilterByOwn(): void {
+    this.filterByOwn = !this.filterByOwn;
+  }
   fetchMothers() {
     // Simulate async call (replace with actual Firestore call)
     setTimeout(() => {
@@ -90,6 +102,15 @@ export class PrenatalComponent implements OnInit, OnDestroy {
       // this.mothers = [mock data]; // For testing with values
       this.loading = false;
     }, 2000); // simulate fetch delay
+  }
+  loadUserDetails(): void {
+    const uid = this.auth.currentUser?.uid;
+    if (!uid) return;
+
+    const userDoc = doc(this.firestore, 'users', uid);
+    docData(userDoc).subscribe(data => {
+      this.userDetails = data;
+    });
   }
   ngOnDestroy(): void {
     if (this.clickListener) {
@@ -179,11 +200,34 @@ export class PrenatalComponent implements OnInit, OnDestroy {
     this.showContextMenu = false;
   }
 
+  // Load mothers from Firestore and populate user details
   loadMothers(): void {
     const ref = collection(this.firestore, 'mothers');
-    collectionData(ref, { idField: 'id' }).subscribe(data => {
+    collectionData(ref, { idField: 'id' }).subscribe((data: any[]) => {
       this.mothers = data;
+      this.loadUserDetailsForMothers();
     });
+  }
+    // Load user details based on the UID in each mother's document
+    loadUserDetailsForMothers(): void {
+      // Use forkJoin to fetch user details for all mothers concurrently
+      const userDetailsObservables: Observable<any>[] = this.mothers.map(mother => {
+        const userRef = doc(this.firestore, `users/${mother.uid}`);
+        return docData(userRef);
+      });
+
+      forkJoin(userDetailsObservables).subscribe(userDetails => {
+        this.mothers.forEach((mother, index) => {
+          mother.userDetails = userDetails[index]; // Attach userDetails to the mother object
+        });
+        this.loading = false;
+      });
+    }
+
+  async fetchUserDetails(uid: string): Promise<any> {
+    const userDoc = doc(this.firestore, 'users', uid);
+    const userData = await docData(userDoc).toPromise();
+    return userData; // Return the user details for the given uid
   }
   // Method to handle filter changes
   onFilterChange(): void {
@@ -199,6 +243,7 @@ export class PrenatalComponent implements OnInit, OnDestroy {
       // Filter only the mother's records belonging to the current user
       filtered = filtered.filter(mother => mother.uid === currentUserUid);
     }
+
     if (this.searchTerm.trim()) {
       // Filter based on search term if provided
       filtered = filtered.filter(mother =>
@@ -208,6 +253,7 @@ export class PrenatalComponent implements OnInit, OnDestroy {
 
     return filtered;
   }
+
 
 
   // Update the context menu position based on mouse event
