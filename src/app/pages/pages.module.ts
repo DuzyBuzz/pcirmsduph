@@ -11,6 +11,7 @@ import { ChildrenComponent } from './children/children.component';
 import { PrenatalComponent } from './prenatal/prenatal.component';
 import { ChildFormComponent } from './forms/child-form/child-form.component';
 import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-record/mothers-pregnancy-record.component";
+import { PrenatalEditFormComponent } from "./forms/prenatal-edit-form/prenatal-edit-form.component";
 
 
 @NgModule({
@@ -30,8 +31,8 @@ import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-re
     RouterModule,
     FullCalendarModule,
     NgxChartsModule,
-    MothersPregnancyRecordComponent
-
+    MothersPregnancyRecordComponent,
+    PrenatalEditFormComponent
 ],
   exports: [
     DashboardComponent,

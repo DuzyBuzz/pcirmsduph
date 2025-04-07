@@ -5,6 +5,7 @@ import { ChildrenComponent } from '../pages/children/children.component';
 import { ChildFormComponent } from '../pages/forms/child-form/child-form.component';
 import { PrenatalComponent } from '../pages/prenatal/prenatal.component';
 import { PrenatalFormComponent } from '../pages/forms/prenatal-form/prenatal-form.component';
+import { PrenatalEditFormComponent } from '../pages/forms/prenatal-edit-form/prenatal-edit-form.component';
 
 
 export const usersRoutes: Routes = [
@@ -14,7 +15,8 @@ export const usersRoutes: Routes = [
     { path: 'children', component: ChildrenComponent },
     { path: 'prenatal', component: PrenatalComponent },
     { path: 'child-form', component: ChildFormComponent },
-    {path: 'prenatal-form', component: PrenatalFormComponent}
+    {path: 'prenatal-form', component: PrenatalFormComponent},
+    { path: 'prenatal-edit-form/:id', component: PrenatalEditFormComponent } 
 
   ]}
 ];

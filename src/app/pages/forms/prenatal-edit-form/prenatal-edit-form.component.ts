@@ -1,40 +1,53 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Firestore, collection, addDoc, collectionData, doc, getDoc } from '@angular/fire/firestore';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-prenatal-form',
+  selector: 'app-prenatal-edit-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './prenatal-form.component.html',
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  templateUrl: './prenatal-edit-form.component.html',
+  styleUrls: ['./prenatal-edit-form.component.scss'],
 })
-export class PrenatalFormComponent implements OnInit {
+export class PrenatalEditFormComponent implements OnInit {
+  @Input() motherId: string | null = null;
   motherForm!: FormGroup;
   emergencyForm!: FormGroup;
   showEmergency = false;
   showMotherConfirmModal = false;
   showFinalConfirmModal = false;
-
-  auth = inject(Auth);
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
-  mothers: any[] = [];
+  existingData: any = {}; // Store fetched data here
 
   emergencyFields = [
-    { name: 'spouseName', label: 'Spouse Name', type: 'text' },
-    { name: 'spouseContact', label: 'Spouse Contact Number', type: 'tel' },
-    { name: 'motherName', label: 'Mother’s Name', type: 'text' },
-    { name: 'MotherContact', label: 'Mother Contact', type: 'tel' },
-    { name: 'fatherName', label: 'Father’s Name', type: 'text' },
-    { name: 'fatherContact', label: 'Father’s Contact Number', type: 'tel' },
+    { name: 'spouseName', label: 'Spouse Name' },
+    { name: 'spouseContact', label: 'Spouse Contact' },
+    { name: 'motherName', label: 'Mother Name' },
+    { name: 'motherContact', label: 'Mother Contact' },
+    { name: 'fatherName', label: 'Father Name' },
+    { name: 'fatherContact', label: 'Father Contact' },
   ];
 
-  constructor(private fb: FormBuilder, private firestore: Firestore, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private firestore: Firestore,
+    private router: Router,
+    private auth: Auth
+  ) {}
 
   ngOnInit(): void {
+    if (this.motherId) {
+      this.initializeForms();
+      this.loadData();
+    }
+  }
+
+  initializeForms(): void {
     this.motherForm = this.fb.group({
       name: ['', Validators.required],
       homeAddress: ['', Validators.required],
@@ -45,7 +58,7 @@ export class PrenatalFormComponent implements OnInit {
       hx: [''],
       lmp: [''],
       dueDate: ['', Validators.required],
-      ultrasound: ['']
+      ultrasound: [''],
     });
 
     this.emergencyForm = this.fb.group({
@@ -54,15 +67,39 @@ export class PrenatalFormComponent implements OnInit {
       motherName: [''],
       motherContact: [''],
       fatherName: [''],
-      fatherContact: ['']
+      fatherContact: [''],
     });
-
-    this.loadMothers();
   }
 
-  isInvalid(form: FormGroup, field: string): boolean {
-    const control = form.get(field);
-    return !!(control && control.invalid && (control.dirty || control.touched));
+  // Fetch data from Firestore based on the received motherId
+  async loadData(): Promise<void> {
+    if (this.motherId) {
+      try {
+        const docRef = doc(this.firestore, 'mothers', this.motherId);
+        const snapshot = await getDoc(docRef);
+
+        if (snapshot.exists()) {
+          this.existingData = snapshot.data();
+          this.motherForm.patchValue(this.existingData);
+          this.emergencyForm.patchValue(this.existingData);
+        } else {
+          console.log('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching document:', error);
+      }
+    }
+  }
+
+  // Check and compare if there's a change in data
+  getChangedFields(form: FormGroup, existingData: any): any {
+    const changes: any = {};
+    Object.keys(form.value).forEach((key) => {
+      if (form.value[key] !== existingData[key]) {
+        changes[key] = { oldValue: existingData[key], newValue: form.value[key] };
+      }
+    });
+    return changes;
   }
 
   openMotherConfirmationModal(): void {
@@ -82,10 +119,6 @@ export class PrenatalFormComponent implements OnInit {
     this.showMotherConfirmModal = false;
   }
 
-  backToMotherForm(): void {
-    this.showEmergency = false;
-  }
-
   openFinalConfirmationModal(): void {
     if (!this.atLeastOneEmergency()) {
       this.notificationMessage = 'Please provide at least one emergency contact.';
@@ -99,7 +132,7 @@ export class PrenatalFormComponent implements OnInit {
     this.showFinalConfirmModal = false;
   }
 
-  async confirmFinalInfo(): Promise<void> {
+  async submitEdits(): Promise<void> {
     this.showFinalConfirmModal = false;
 
     const user = this.auth.currentUser;
@@ -136,26 +169,25 @@ export class PrenatalFormComponent implements OnInit {
     };
 
     try {
-      const ref = collection(this.firestore, 'mothers');
-      await addDoc(ref, data);
+      const docRef = doc(this.firestore, 'mothers', this.motherId!); // Non-null assertion because motherId is not null
+      await updateDoc(docRef, data);
 
-      this.notificationMessage = 'Mother and emergency info saved successfully!';
+      this.notificationMessage = 'Mother and emergency info updated successfully!';
       this.notificationType = 'success';
 
       this.motherForm.reset();
       this.emergencyForm.reset();
       this.showEmergency = false;
 
-      this.loadMothers();
+      this.router.navigate(['/ob-gyne/prenatal']);
     } catch (error) {
       console.error(error);
-      this.notificationMessage = 'Failed to save data. Please try again.';
+      this.notificationMessage = 'Failed to update data. Please try again.';
       this.notificationType = 'error';
     }
 
     setTimeout(() => {
       this.notificationMessage = '';
-      this.router.navigate(['/ob-gyne/prenatal']);
     }, 4000);
   }
   proceedToEmergency(): void {
@@ -166,14 +198,14 @@ export class PrenatalFormComponent implements OnInit {
     this.showEmergency = true; // Show the emergency info form when "Next" is clicked
   }
   atLeastOneEmergency(): boolean {
-    const { spouseContact, parentContact, fatherContact } = this.emergencyForm.value;
-    return !!(spouseContact || parentContact || fatherContact);
+    const { spouseContact, motherContact, fatherContact } = this.emergencyForm.value;
+    return !!(spouseContact || motherContact || fatherContact);
   }
 
-  loadMothers(): void {
-    const ref = collection(this.firestore, 'mothers');
-    collectionData(ref, { idField: 'id' }).subscribe(data => {
-      this.mothers = data;
-    });
+  backToMotherForm(): void {
+    this.showEmergency = false;
   }
+
+
+
 }

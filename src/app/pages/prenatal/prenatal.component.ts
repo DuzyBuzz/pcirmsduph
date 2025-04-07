@@ -12,11 +12,14 @@ import { forkJoin, Observable } from 'rxjs';
   styleUrls: ['./prenatal.component.scss']
 })
 export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
+  isModalOpen: boolean = false; // Flag to control modal visibility
   motherForm!: FormGroup;
   emergencyForm!: FormGroup;
   showEmergency = false;
   mothers: any[] = [];
-  searchTerm: string = '';
+  searchHospitalTerm: string = '';
+  searchAttendantTerm: string = '';
+  searchPatientTerm: string = '';
   filterByOwn: boolean = false;
   showContextMenu = false;
   showDeleteModal = false;
@@ -117,6 +120,17 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
       this.clickListener();
     }
   }
+    // This method is called when the 'Edit' button is clicked
+    openModal(motherId: string): void {
+      this.selectedMotherId = motherId; // Set the selected mother ID
+      this.isModalOpen = true; // Open the modal
+    }
+
+    // This method is called to close the modal
+    closeModal(): void {
+      this.isModalOpen = false; // Close the modal
+      this.selectedMotherId = null; // Optionally reset selectedMotherId
+    }
     // Set selectedMotherId when a mother is clicked
   selectMother(motherId: string): void {
     this.selectedMotherId = motherId;
@@ -244,15 +258,28 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
       filtered = filtered.filter(mother => mother.uid === currentUserUid);
     }
 
-    if (this.searchTerm.trim()) {
-      // Filter based on search term if provided
+    // Filter based on search terms if provided
+    if (this.searchHospitalTerm.trim()) {
       filtered = filtered.filter(mother =>
-        mother.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        mother.hospitalName?.toLowerCase().includes(this.searchHospitalTerm.toLowerCase())
+      );
+    }
+
+    if (this.searchAttendantTerm.trim()) {
+      filtered = filtered.filter(mother =>
+        mother.attendantName?.toLowerCase().includes(this.searchAttendantTerm.toLowerCase())
+      );
+    }
+
+    if (this.searchPatientTerm.trim()) {
+      filtered = filtered.filter(mother =>
+        mother.name.toLowerCase().includes(this.searchPatientTerm.toLowerCase())
       );
     }
 
     return filtered;
   }
+
 
 
 
