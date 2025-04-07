@@ -149,23 +149,42 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div *ngIf="showDeleteModal" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center transition-opacity duration-300">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
-      <h2 class="text-red-600 font-semibold text-lg mb-4">Confirm Deletion</h2>
-      <p class="mb-2">Please type the name of the patient to confirm deletion:</p>
-      <input
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center transition-opacity duration-300">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+    <h2 class="text-red-600 font-semibold text-lg mb-4">Confirm Deletion</h2>
+    <p class="mb-2">Please type the patient's name to confirm deletion:</p>
+
+    <input
       type="text"
       [(ngModel)]="confirmName"
       [placeholder]="selectedMother?.name"
-      class="w-full border border-gray-300 rounded p-2 mb-4 transition-all duration-300 ease-in-out" />
+      class="w-full border border-gray-300 rounded p-2 mb-4 transition-all duration-300 ease-in-out"
+    />
 
-      <div class="flex justify-center gap-4">
-        <button (click)="closeDeleteModal()" class="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-300">Cancel</button>
-        <button (click)="deleteMother()" class="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">Delete</button>
-      </div>
+    <div class="flex justify-center gap-4">
+      <button
+        (click)="closeDeleteModal()"
+        class="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-300"
+      >
+        Cancel
+      </button>
+
+      <button
+        (click)="deleteMother()"
+        [disabled]="confirmName !== selectedMother?.name"
+        class="px-6 py-2 rounded transition-colors duration-300"
+        [ngClass]="{
+          'bg-red-500 text-white hover:bg-red-600': confirmName === selectedMother?.name,
+          'bg-red-200 text-red-600 cursor-not-allowed': confirmName !== selectedMother?.name
+        }"
+      >
+        Delete
+      </button>
     </div>
   </div>
+</div>
+
 
   <!-- Notification -->
   <div *ngIf="notificationMessage" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-md z-50 text-white"
@@ -177,7 +196,6 @@
   </div>
 
 </div>
-
 <!-- Show record component after mother selected -->
 <app-mothers-pregnancy-record
   *ngIf="selectedMotherId"

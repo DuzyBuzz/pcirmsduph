@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { switchMap } from 'rxjs';
 import { MothersService } from '../../../services/mother/mother-service.service';
 import { AuthService } from '../../../auth/auth.service';
+import { doc, updateDoc } from 'firebase/firestore';
+import { Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './mothers-pregnancy-record.component.html',
   styleUrls: ['./mothers-pregnancy-record.component.scss']
 })
@@ -29,6 +31,10 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
   confirmDate: string = '';
   notificationMessage: string = '';
   notificationType: string = '';
+  selectedMother: any = null;
+  showPrenatalDeleteModal = false;
+selectedRecordIndex: number = -1;
+confirmRecordDate: string = '';
 
   columns = [
     { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
@@ -64,7 +70,8 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
   constructor(
     private fb: FormBuilder,
     private mothersService: MothersService,
-    private authService: AuthService
+    private authService: AuthService,
+    private firestore: Firestore
   ) {
     this.pregnancyForm = this.fb.group({});
     this.initializeFormControls();
@@ -111,7 +118,7 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
       this.error = 'Failed to fetch user UID.';
     }
   }
- 
+
 
   loadRecords() {
     // Replace with actual Firestore fetch logic
@@ -171,29 +178,33 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
       }
     });
   }
+  deletePrenatalRecord() {
+    if (this.confirmRecordDate !== this.selectedRecord?.date) return;
 
-  onDeleteRecord(index: number) {
-    this.checkIfUserCanEditOrDelete().then(canDelete => {
-      if (canDelete) {
-        const record = this.records[index];
-        const confirmed = confirm('Are you sure you want to delete this record?');
-        if (confirmed && record.id && this.motherId) {
-          this.mothersService.deletePrenatalRecord(this.motherId, record.id)
-            .then(() => {
-              this.records.splice(index, 1);  // Remove the record from the list
-              this.successMessage = 'Record deleted successfully!';
-              setTimeout(() => this.successMessage = '', 2000);
-            })
-            .catch(error => {
-              console.error(error);
-              this.error = 'Failed to delete the record.';
-            });
-        }
-      } else {
-        this.error = 'You do not have permission to delete this record. You can only delete your own records.';
-      }
+    const motherDocRef = doc(this.firestore, 'mothers', this.selectedMother.id);
+    const updatedRecords = [...this.selectedMother.prenatalRecords];
+    updatedRecords.splice(this.selectedRecordIndex, 1);
+
+    updateDoc(motherDocRef, { prenatalRecords: updatedRecords }).then(() => {
+      this.selectedMother.prenatalRecords = updatedRecords;
+      this.closePrenatalDeleteModal();
     });
   }
+  closePrenatalDeleteModal() {
+    this.showPrenatalDeleteModal = false;
+    this.selectedRecord = null;
+    this.selectedRecordIndex = -1;
+    this.confirmRecordDate = '';
+  }
+
+
+  onDeleteRecord(index: number, record: any) {
+    this.selectedRecordIndex = index;
+    this.selectedRecord = record;
+    this.confirmRecordDate = '';
+    this.showPrenatalDeleteModal = true;
+  }
+
 
   cancelConfirmation() {
     this.showConfirmationModal = false;

@@ -29,14 +29,18 @@ export class MothersService {
     );
   }
 
-// Add a prenatal record
-addPrenatalRecord(motherId: string, record: any): Promise<{ id: string; data: any }> {
-  const collectionRef = collection(this.firestore, `mothers/${motherId}/prenatalRecords`);
-  return addDoc(collectionRef, record).then(docRef => {
-    return { id: docRef.id, data: record }; // Return record with ID
-  });
-}
+  addPrenatalRecord(motherId: string, record: any): Promise<{ id: string; data: any }> {
+    // Ensure the record has a proper structure and data
+    const collectionRef = collection(this.firestore, `mothers/${motherId}/prenatalRecords`);
 
+    return addDoc(collectionRef, record).then(docRef => {
+      // Firestore automatically assigns an ID to each document
+      return { id: docRef.id, data: { ...record, id: docRef.id } }; // Return document data with the ID
+    }).catch(error => {
+      console.error("Error adding record: ", error);
+      throw new Error('Failed to save prenatal record.');
+    });
+  }
 // Delete a prenatal record
 deletePrenatalRecord(motherId: string, recordId: string): Promise<void> {
   const docRef = doc(this.firestore, `mothers/${motherId}/prenatalRecords/${recordId}`);
