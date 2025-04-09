@@ -50,6 +50,6 @@ export class SetupUserComponent implements OnInit {
 
     alert('Information submitted successfully!');
     this.obForm.reset();
-    this.router.navigate(['/ob-gyne']);
+    this.router.navigate(['/HCP']);
   }
 }
