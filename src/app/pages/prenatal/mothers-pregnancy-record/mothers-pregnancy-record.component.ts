@@ -7,6 +7,7 @@ import { AuthService } from '../../../auth/auth.service';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Firestore } from '@angular/fire/firestore';
 import { PrenatalEditRecordComponent } from "../../forms/prenatal-edit-record/prenatal-edit-record.component";
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
@@ -20,6 +21,7 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
   records: any[] = [];
   motherData: any;
   showSubmittedRecords = true;
+  showSubmittedExelRecords = true;
   loading = true;
   @Input() motherId: string | null = null;  // motherId as an Input
   error: string | null = null; // Error property to show error messages
@@ -38,7 +40,7 @@ selectedRecordIndex: number = -1;
 confirmRecordDate: string = '';
 selectedPrenatalRecordId: string | null = null;
 isModalOpen: boolean = false;
-
+isRecordsLoaded: boolean = false;
 
 
 
@@ -124,6 +126,104 @@ isModalOpen: boolean = false;
     }
   }
 
+  exportToExcel(): void {
+    const wsData: any[][] = [];
+
+    // --- Patient Info Header
+    wsData.push(['', '', '', '', '', '', '', 'Patient Information']);
+    wsData.push([
+      'Name', 'Home Address', 'Age', 'G', 'P', 'Hx', 'LMP', 'Ultrasound', 'Contact Number'
+    ]);
+    wsData.push([
+      this.motherData.name,
+      this.motherData.address,
+      this.motherData.age,
+      this.motherData.g,
+      this.motherData.p,
+      this.motherData.hx,
+      this.motherData.lmp,
+      this.motherData.ultrasound,
+      this.motherData.contactNumber
+    ]);
+    wsData.push([]);
+
+    // --- Prenatal Records Header
+    wsData.push(['Prenatal Records']);
+
+    // --- Prepare horizontal records
+    const fields = [
+      'Date:', 'AOG:', 'BP:', 'FH:', 'FGB:', 'Wt/Pres/IE:', 'MVT/FA:', 'Iron:', 'Calcium:', 'Vit C/Moringa:',
+      'Dydrogesterone:', 'Progesterone:', 'Isoxsuprine:', 'Milk/Others:', 'Co-Mgt:', 'TT/TD:', 'TDAP (27-36w):',
+      'SPT:', 'Blood & Rh:', 'RPR:', 'HBsAG:', 'CBC:', 'Urinalysis:', 'FBS/75 OGTT:', 'RBS:', 'Ultrasound:',
+      'Other Labs', 'Follow Up'
+    ];
+
+    const horizontalRecords: any[][] = [];
+
+    // Push fields as first column
+    for (let i = 0; i < fields.length; i++) {
+      horizontalRecords.push([fields[i]]);
+    }
+
+    // Add each record’s value as a new column
+    for (const record of this.records) {
+      const values = [
+        record.date,
+        record.aog,
+        record.bp,
+        record.fh,
+        record.fgb,
+        record.wtPresIe,
+        record.mvtFa,
+        record.iron,
+        record.calcium,
+        record.vitCMoringa,
+        record.dydrogesterone,
+        record.progesterone,
+        record.isoxsuprine,
+        record.milkOthers,
+        record.coMgt,
+        record.ttTd,
+        record.tdap,
+        record.spt,
+        record.bloodRh,
+        record.rpr,
+        record.hbsag,
+        record.cbc,
+        record.urinalysis,
+        record.fbs,
+        record.rbs,
+        record.ultrasound,
+        record.otherLabs,
+        record.followUp
+      ];
+
+      for (let i = 0; i < values.length; i++) {
+        horizontalRecords[i].push(values[i]);
+      }
+    }
+
+    // Add horizontal records to the sheet
+    wsData.push(...horizontalRecords);
+
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Apply merges
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // Merge for "Patient Information"
+      { s: { r: 4, c: 0 }, e: { r: 4, c: this.records.length } } // Merge for "Prenatal Records"
+    ];
+
+    // Auto column widths
+    ws['!cols'] = new Array(this.records.length + 1).fill({ wch: 18 });
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Prenatal');
+    const g = this.motherData.g;
+
+    XLSX.writeFile(wb, this.motherData.name +"_Gravida_"+g+"_Prenatal Record.xlsx");
+  }
+
   // Fetch currentUserUid as an async call
   async getCurrentUserUid() {
     try {
@@ -139,6 +239,7 @@ isModalOpen: boolean = false;
     setTimeout(() => {
       // Simulate loading data
       // this.records = [...]; // Uncomment and fill to test with data
+      this.isRecordsLoaded = true;
       this.loading = false;
     }, 2000); // Simulated fetch time
   }

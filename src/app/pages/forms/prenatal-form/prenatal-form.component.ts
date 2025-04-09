@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Firestore, collection, addDoc, collectionData, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, doc, getDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 
@@ -40,10 +40,10 @@ export class PrenatalFormComponent implements OnInit {
       homeAddress: ['', Validators.required],
       contactNumber: ['', Validators.required],
       age: ['', Validators.required],
-      g: [''],
-      p: [''],
-      hx: [''],
-      lmp: [''],
+      g: ['', Validators.required],
+      p: ['', Validators.required],
+      hx: ['', Validators.required],
+      lmp: ['', Validators.required],
       dueDate: ['', Validators.required],
       ultrasound: ['']
     });
@@ -102,6 +102,13 @@ export class PrenatalFormComponent implements OnInit {
   async confirmFinalInfo(): Promise<void> {
     this.showFinalConfirmModal = false;
 
+    // Validate that at least one emergency contact is provided
+    if (!this.atLeastOneEmergency()) {
+      this.notificationMessage = 'Please provide at least one emergency contact.';
+      this.notificationType = 'error';
+      return;
+    }
+
     const user = this.auth.currentUser;
 
     if (!user) {
@@ -110,32 +117,52 @@ export class PrenatalFormComponent implements OnInit {
       return;
     }
 
-    const userRef = doc(this.firestore, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      this.notificationMessage = 'User data not found.';
-      this.notificationType = 'error';
-      return;
-    }
-
-    const motherInfo = this.motherForm.value;
-    const emergencyInfo = this.emergencyForm.value;
-
-    const userData = userSnap.data();
-    const { name, hospitalAddress, hospitalName } = userData;
-
-    const data = {
-      ...motherInfo,
-      ...emergencyInfo,
-      uid: user.uid,
-      attendantName: name || '',
-      hospitalAddress: hospitalAddress || '',
-      hospitalName: hospitalName || '',
-      createdAt: new Date(),
-    };
+    // Check if there's already a matching mother in the database
+    const motherName = this.motherForm.value.name;
+    const motherGravida = this.motherForm.value.g;  // Gravida (G)
 
     try {
+      const mothersRef = collection(this.firestore, 'mothers');
+      const q = query(mothersRef,
+        where('name', '==', motherName),
+        where('g', '==', motherGravida)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        this.notificationMessage = `A record already exists for a mother named "${motherName}" with Gravida "${motherGravida}". Please verify the information or edit the existing record.`;
+        this.notificationType = 'error';
+        return;
+      }
+
+      // If no matching record exists, save the new data
+      const userRef = doc(this.firestore, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        this.notificationMessage = 'User data not found. Please check your account information.';
+        this.notificationType = 'error';
+        return;
+      }
+
+      const motherInfo = this.motherForm.value;
+      const emergencyInfo = this.emergencyForm.value;
+
+      const userData = userSnap.data();
+      const { name, hospitalAddress, hospitalName } = userData;
+
+      const data = {
+        ...motherInfo,
+        ...emergencyInfo,
+        uid: user.uid,
+        attendantName: name || '',
+        hospitalAddress: hospitalAddress || '',
+        hospitalName: hospitalName || '',
+        createdAt: new Date(),
+      };
+
+      // Add the new mother's record to Firestore
       const ref = collection(this.firestore, 'mothers');
       await addDoc(ref, data);
 
@@ -149,7 +176,7 @@ export class PrenatalFormComponent implements OnInit {
       this.loadMothers();
     } catch (error) {
       console.error(error);
-      this.notificationMessage = 'Failed to save data. Please try again.';
+      this.notificationMessage = 'Failed to save data. Please try again later.';
       this.notificationType = 'error';
     }
 

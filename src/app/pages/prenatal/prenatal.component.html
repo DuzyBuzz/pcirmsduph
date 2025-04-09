@@ -96,6 +96,7 @@
             <p class="text-blue-800 font-semibold text-lg cursor-pointer transition-colors duration-300" (click)="selectMother(mother.id)">
               <strong class="font-bold text-blue-900">Patient Name:</strong> {{ mother.name }}
             </p>
+            <p class="text-gray-600 text-sm">Gravida: <span class="font-medium">{{ mother.g || 'N/A' }}</span></p>
             <p class="text-gray-600 text-sm">Spouse: <span class="font-medium">{{ mother.spouseName || 'N/A' }}</span></p>
 
             <!-- Display User Details based on Mother UID -->
