@@ -6,10 +6,11 @@ import { MothersService } from '../../../services/mother/mother-service.service'
 import { AuthService } from '../../../auth/auth.service';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Firestore } from '@angular/fire/firestore';
+import { PrenatalEditRecordComponent } from "../../forms/prenatal-edit-record/prenatal-edit-record.component";
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, PrenatalEditRecordComponent],
   templateUrl: './mothers-pregnancy-record.component.html',
   styleUrls: ['./mothers-pregnancy-record.component.scss']
 })
@@ -35,6 +36,14 @@ export class MothersPregnancyRecordComponent implements OnChanges, OnInit {
   showPrenatalDeleteModal = false;
 selectedRecordIndex: number = -1;
 confirmRecordDate: string = '';
+selectedPrenatalRecordId: string | null = null;
+isModalOpen: boolean = false;
+
+
+
+
+
+
 
   columns = [
     { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
@@ -90,6 +99,11 @@ confirmRecordDate: string = '';
 
     this.getCurrentUserUid(); // Retrieve the current user's UID on component initialization
   }
+      // This method is called to close the modal
+      closeModal(): void {
+        this.isModalOpen = false; // Close the modal
+        this.selectedRecord = null; // Optionally reset selectedMotherId
+      }
 
   ngOnChanges(): void {
     if (this.motherId) {
@@ -168,16 +182,12 @@ confirmRecordDate: string = '';
   }
 
   onEditRecord(index: number) {
-    this.checkIfUserCanEditOrDelete().then(canEdit => {
-      if (canEdit) {
-        const record = this.records[index];
-        this.pregnancyForm.patchValue(record);  // Patch form with the record data
-        this.records.splice(index, 1);  // Remove the record so it can be replaced after editing
-      } else {
-        this.error = 'You do not have permission to edit this record. You can only modify your own records.';
-      }
-    });
+    const record = this.records[index];
+    this.selectedRecord = record?.id; // assuming each record has an `id`
+    this.isModalOpen = true;
+    console.log('mother id:'+this.motherId);
   }
+
   deletePrenatalRecord() {
     if (this.confirmRecordDate !== this.selectedRecord?.date) return;
 
