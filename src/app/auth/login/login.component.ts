@@ -46,7 +46,7 @@ export class LoginComponent {
     if (email === this.authService.getAdminEmail()) {
       this.router.navigate(['/admin']);
     } else {
-      this.router.navigate(['/ob-gyne']);
+      this.router.navigate(['/HCP']);
     }
   }
 }
