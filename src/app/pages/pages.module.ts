@@ -12,6 +12,8 @@ import { PrenatalComponent } from './prenatal/prenatal.component';
 import { ChildFormComponent } from './forms/child-form/child-form.component';
 import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-record/mothers-pregnancy-record.component";
 import { PrenatalEditFormComponent } from "./forms/prenatal-edit-form/prenatal-edit-form.component";
+import { SpinnnerComponent } from '../shared/core/spinnner/spinnner.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -21,7 +23,7 @@ import { PrenatalEditFormComponent } from "./forms/prenatal-edit-form/prenatal-e
     AppointmentsComponent,
     ChildrenComponent,
     ChildFormComponent,
-    PrenatalComponent
+    PrenatalComponent,
 
   ],
   imports: [
@@ -32,7 +34,8 @@ import { PrenatalEditFormComponent } from "./forms/prenatal-edit-form/prenatal-e
     FullCalendarModule,
     NgxChartsModule,
     MothersPregnancyRecordComponent,
-    PrenatalEditFormComponent
+    PrenatalEditFormComponent,
+    SpinnnerComponent
 ],
   exports: [
     DashboardComponent,
@@ -40,7 +43,7 @@ import { PrenatalEditFormComponent } from "./forms/prenatal-edit-form/prenatal-e
     NgxChartsModule,
     ChildrenComponent,
     ChildFormComponent,
-    PrenatalComponent
+    PrenatalComponent,
 
   ],
 })

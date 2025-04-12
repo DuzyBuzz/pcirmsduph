@@ -4,6 +4,7 @@ import { Firestore, collection, addDoc, collectionData, deleteDoc, doc, docData 
 import { Auth } from '@angular/fire/auth';
 import { inject } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-prenatal',
@@ -39,6 +40,8 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
   currentUserUid: string | null = null;
+  navigating= false;
+  spinnerMessage = '';
 
 
 
@@ -54,7 +57,8 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
     private firestore: Firestore,
     private renderer: Renderer2,
     private el: ElementRef,
-    private auth: Auth
+    private auth: Auth,
+    private router: Router
 
   ) {}
   ngOnChanges(): void {
@@ -176,6 +180,8 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
       const data = { ...motherInfo, ...emergencyInfo };
 
       try {
+        this.navigating = true;
+        this.spinnerMessage = 'Saving Patient Information...'
         const ref = collection(this.firestore, 'mothers');
         await addDoc(ref, data);
 
@@ -212,6 +218,7 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedMother = mother;
     this.showDeleteModal = true;
     this.showContextMenu = false;
+
   }
 
   // Load mothers from Firestore and populate user details
@@ -310,8 +317,17 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   closeDeleteModal(): void {
+
     this.showDeleteModal = false;
     this.confirmName = '';
+    this.navigating = true;
+    this.spinnerMessage = 'Deleting Patient Record...';
+    
+    setTimeout(() => {
+      this.router.navigate(['/HCP/prenatal']).then(() => {
+        this.navigating = false; // Reset after navigation completes
+      });
+    }, 4000);
   }
 
   async deleteMother(): Promise<void> {

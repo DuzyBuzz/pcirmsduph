@@ -77,7 +77,7 @@
         Registered Prenatal Patients
       </h3>
       <button
-        routerLink="/ob-gyne/prenatal-form"
+        routerLink="/HCP/prenatal-form"
         class="px-6 h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl shadow-md transition-transform duration-300">
         + Add Prenatal Patient
       </button>
@@ -143,6 +143,11 @@
 
       </div>
     </div>
+    <app-spinnner
+    [navigating]="navigating"
+    [spinnerMessage]="spinnerMessage">
+  
+    </app-spinnner>
   </aside>
 
   <!-- Permission Modal -->

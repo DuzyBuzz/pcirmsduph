@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth.service';
 import { User } from '@angular/fire/auth';
+import { SharedModule } from "../../shared/shared.module";
+import { SpinnnerComponent } from '../../shared/core/spinnner/spinnner.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SharedModule, SpinnnerComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -16,6 +18,9 @@ export class LoginComponent {
   email = '';
   password = '';
   loading = false;
+  navigating = false;
+  spinnerMessage = 'Preparing your dashboard...';
+
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -28,6 +33,8 @@ export class LoginComponent {
         if (!isComplete) {
           this.router.navigate(['/auth/setup-user']);
         } else {
+          
+          this.navigating = true;
           this.redirectUser(user.email);
         }
       })
@@ -46,7 +53,10 @@ export class LoginComponent {
     if (email === this.authService.getAdminEmail()) {
       this.router.navigate(['/admin']);
     } else {
-      this.router.navigate(['/HCP']);
+      setTimeout(() => {
+        this.router.navigate(['/HCP']);
+        this.navigating = false; // optional: cleanup if component remains loaded
+      }, 3000);
     }
   }
 }

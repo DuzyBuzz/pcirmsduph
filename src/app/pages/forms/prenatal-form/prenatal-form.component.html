@@ -175,6 +175,7 @@
         Submit All
       </button>
     </div>
+
   </form>
 
   <!-- Confirm All Info Modal -->
@@ -189,12 +190,20 @@
         <div *ngFor="let field of emergencyFields">
           <p><strong>{{ field.label }}:</strong> {{ emergencyForm.value[field.name] }}</p>
         </div>
+
       </div>
 
       <div class="flex justify-end gap-3 mt-6">
         <button class="px-4 py-2 bg-gray-200 rounded-xl text-gray-700 hover:bg-gray-300 transition-all duration-300 ease-in-out" (click)="cancelFinalConfirmation()">Cancel</button>
         <button class="px-4 py-2 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-all duration-300 ease-in-out" (click)="confirmFinalInfo()">Save</button>
       </div>
+
     </div>
+
   </div>
+  <app-spinnner
+  [navigating]="navigating"
+  [spinnerMessage]="spinnerMessage">
+
+  </app-spinnner>
 </div>

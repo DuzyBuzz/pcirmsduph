@@ -8,10 +8,11 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { Firestore } from '@angular/fire/firestore';
 import { PrenatalEditRecordComponent } from "../../forms/prenatal-edit-record/prenatal-edit-record.component";
 import * as XLSX from 'xlsx';
+import { SpinnnerComponent } from '../../../shared/core/spinnner/spinnner.component';
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule, PrenatalEditRecordComponent],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, PrenatalEditRecordComponent, SpinnnerComponent],
   templateUrl: './mothers-pregnancy-record.component.html',
   styleUrls: ['./mothers-pregnancy-record.component.scss']
 })
@@ -41,7 +42,8 @@ confirmRecordDate: string = '';
 selectedPrenatalRecordId: string | null = null;
 isModalOpen: boolean = false;
 isRecordsLoaded: boolean = false;
-
+navigating = false;
+spinnerMessage = '';
 
 
 
@@ -347,6 +349,8 @@ isRecordsLoaded: boolean = false;
               date: new Date().toISOString().split('T')[0]
             });
             this.error = null;
+            this.navigating = true;
+            this.spinnerMessage = 'Recording...'
             this.successMessage = 'Record saved successfully!';
             this.showConfirmationModal = false;
             setTimeout(() => this.successMessage = '', 7000);

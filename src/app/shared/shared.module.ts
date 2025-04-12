@@ -9,13 +9,13 @@ import { RouterModule } from '@angular/router';
   declarations: [
     RightSidePanelComponent,
     FooterComponent,
-    LeftSidePanelComponent
+    LeftSidePanelComponent,
   ],
   imports: [CommonModule, RouterModule],
   exports: [
     RightSidePanelComponent,
     FooterComponent,
-    LeftSidePanelComponent
+    LeftSidePanelComponent,
   ],
 })
 export class SharedModule { }

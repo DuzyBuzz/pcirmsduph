@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Firestore, collection, addDoc, collectionData, doc, getDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { SpinnnerComponent } from '../../../shared/core/spinnner/spinnner.component';
 
 @Component({
   selector: 'app-prenatal-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,SpinnnerComponent],
   templateUrl: './prenatal-form.component.html',
 })
 export class PrenatalFormComponent implements OnInit {
@@ -17,6 +18,8 @@ export class PrenatalFormComponent implements OnInit {
   showEmergency = false;
   showMotherConfirmModal = false;
   showFinalConfirmModal = false;
+  navigating  = false;
+  spinnerMessage = '';
 
   auth = inject(Auth);
   notificationMessage = '';
@@ -102,6 +105,7 @@ export class PrenatalFormComponent implements OnInit {
   async confirmFinalInfo(): Promise<void> {
     this.showFinalConfirmModal = false;
 
+
     // Validate that at least one emergency contact is provided
     if (!this.atLeastOneEmergency()) {
       this.notificationMessage = 'Please provide at least one emergency contact.';
@@ -166,6 +170,7 @@ export class PrenatalFormComponent implements OnInit {
       const ref = collection(this.firestore, 'mothers');
       await addDoc(ref, data);
 
+
       this.notificationMessage = 'Mother and emergency info saved successfully!';
       this.notificationType = 'success';
 
@@ -174,16 +179,23 @@ export class PrenatalFormComponent implements OnInit {
       this.showEmergency = false;
 
       this.loadMothers();
+
     } catch (error) {
       console.error(error);
       this.notificationMessage = 'Failed to save data. Please try again later.';
       this.notificationType = 'error';
     }
+    this.notificationMessage = '';
 
+    this.navigating = true;
+    this.spinnerMessage = 'Saving Patient Information...';
+    
     setTimeout(() => {
-      this.notificationMessage = '';
-      this.router.navigate(['/ob-gyne/prenatal']);
+      this.router.navigate(['/HCP/prenatal']).then(() => {
+        this.navigating = false; // Reset after navigation completes
+      });
     }, 4000);
+    
   }
   proceedToEmergency(): void {
     if (this.motherForm.invalid) {
