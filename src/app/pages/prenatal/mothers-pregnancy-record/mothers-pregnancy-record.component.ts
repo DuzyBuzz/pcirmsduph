@@ -5,10 +5,11 @@ import { switchMap } from 'rxjs';
 import { MothersService } from '../../../services/mother/mother-service.service';
 import { AuthService } from '../../../auth/auth.service';
 import { doc, updateDoc } from 'firebase/firestore';
-import { Firestore } from '@angular/fire/firestore';
+import { deleteDoc, Firestore } from '@angular/fire/firestore';
 import { PrenatalEditRecordComponent } from "../../forms/prenatal-edit-record/prenatal-edit-record.component";
 import * as XLSX from 'xlsx';
 import { SpinnnerComponent } from '../../../shared/core/spinnner/spinnner.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mothers-pregnancy-record',
@@ -84,7 +85,8 @@ spinnerMessage = '';
     private fb: FormBuilder,
     private mothersService: MothersService,
     private authService: AuthService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private router: Router
   ) {
     this.pregnancyForm = this.fb.group({});
     this.initializeFormControls();
@@ -109,24 +111,27 @@ spinnerMessage = '';
         this.selectedRecord = null; // Optionally reset selectedMotherId
       }
 
-  ngOnChanges(): void {
-    if (this.motherId) {
-      this.mothersService.getMotherById(this.motherId).subscribe({
-        next: (data) => {
-          this.motherData = data;
-          this.loadPrenatalRecords(); // load the records
-          this.loading = false;
-        },
-        error: (err) => {
-          this.error = 'Failed to fetch mother data.';
+      ngOnChanges(): void {
+        if (this.motherId) {
+          this.mothersService.getMotherById(this.motherId).subscribe({
+            next: (data) => {
+              this.motherData = data;
+              if (this.motherData) {
+                this.loadPrenatalRecords();  // Proceed with record loading only after motherData is fetched
+              }
+              this.loading = false;
+            },
+            error: (err) => {
+              this.error = 'Failed to fetch mother data.';
+              this.loading = false;
+            }
+          });
+        } else {
+          this.error = 'Mother ID is missing.';
           this.loading = false;
         }
-      });
-    } else {
-      this.error = 'Mother ID is missing.';
-      this.loading = false;
-    }
-  }
+      }
+
 
   exportToExcel(): void {
     const wsData: any[][] = [];
@@ -230,10 +235,14 @@ spinnerMessage = '';
   async getCurrentUserUid() {
     try {
       this.currentUserUid = await this.authService.getCurrentUserId();
+      if (!this.currentUserUid) {
+        this.error = 'User is not logged in or UID could not be fetched.';
+      }
     } catch (error) {
       this.error = 'Failed to fetch user UID.';
     }
   }
+
 
 
   loadRecords() {
@@ -291,18 +300,53 @@ spinnerMessage = '';
     console.log('mother id:'+this.motherId);
   }
 
+
   deletePrenatalRecord() {
-    if (this.confirmRecordDate !== this.selectedRecord?.date) return;
+    if (!this.motherData || !this.selectedRecord) {
+      this.error = 'No record selected for deletion.';
+      return;
+    }
 
-    const motherDocRef = doc(this.firestore, 'mothers', this.selectedMother.id);
-    const updatedRecords = [...this.selectedMother.prenatalRecords];
-    updatedRecords.splice(this.selectedRecordIndex, 1);
+    if (this.confirmRecordDate !== this.selectedRecord.date) {
+      this.error = 'Confirmed date does not match the selected record.';
+      return;
+    }
 
-    updateDoc(motherDocRef, { prenatalRecords: updatedRecords }).then(() => {
-      this.selectedMother.prenatalRecords = updatedRecords;
+    const prenatalRecordDocRef = doc(
+      this.firestore,
+      `mothers/${this.motherId}/prenatalRecords/${this.selectedRecord.id}`
+    );
+
+    deleteDoc(prenatalRecordDocRef)
+    .then(() => {
+      this.spinnerMessage = 'Deleting prenatal record...';
+      this.navigating = true;
+
+      // Filter out the deleted record from the local list
+      this.records = this.records.filter(
+        (record: { id: any }) => record.id !== this.selectedRecord?.id
+      );
+
+      // Close the delete confirmation modal
       this.closePrenatalDeleteModal();
+
+      // Delay to allow spinner feedback before navigation
+      setTimeout(() => {
+        this.navigating = false;
+
+        // Navigate to a fresh state or list view (adjust route as needed)
+        this.router.navigate(['/HCP/prenatal']); // Example
+      }, 1500);
+    })
+    .catch((error) => {
+      this.error = 'Error deleting record: ' + error.message;
+      this.navigating = false;
     });
+
   }
+
+
+
   closePrenatalDeleteModal() {
     this.showPrenatalDeleteModal = false;
     this.selectedRecord = null;
@@ -316,6 +360,7 @@ spinnerMessage = '';
     this.selectedRecord = record;
     this.confirmRecordDate = '';
     this.showPrenatalDeleteModal = true;
+    console.log("delete");
   }
 
 

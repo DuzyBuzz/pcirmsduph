@@ -47,7 +47,7 @@
     <div *ngIf="error" class="p-4 mb-4 text-red-800 bg-red-50 border border-red-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
       <span class="font-semibold">Error:</span> {{ error }}
     </div>
-    <ng-container *ngIf="motherData.uid === currentUserUid; else noPermission">
+    <ng-container *ngIf="motherData?.uid === currentUserUid; else noPermission">
 
     <!-- Pregnancy Form -->
     <form [formGroup]="pregnancyForm" (ngSubmit)="openConfirmModal()" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
@@ -80,7 +80,7 @@
   <!-- No Permission message -->
   <ng-template #noPermission>
     <span class="cursor-not-allowed px-6 py-3 text-sm font-medium text-red-700 border-2 border-red-500 rounded-lg bg-red-50 hover:bg-red-200 transition-colors duration-300">
-      You do not have permission to modify the record for {{motherData.name}}.
+      You do not have permission to modify the record for {{motherData?.name}}.
     </span>
   </ng-template>
   </div>
@@ -99,7 +99,7 @@
 <div *ngIf="noRecordsFound && !loading" class="text-center text-red-500 font-semibold mb-4">
   No prenatal records found.
 </div>
-<ng-container *ngIf="motherData.uid === currentUserUid; else noPermission">
+<ng-container *ngIf="motherData?.uid === currentUserUid; else noPermission">
   <button
   *ngIf="isRecordsLoaded && records && records.length > 0"
   (click)="exportToExcel()"
@@ -133,7 +133,7 @@
 <!-- Action buttons -->
 <div class="flex justify-end gap-3 mt-4">
   <!-- Check if user has permission to edit or delete -->
-  <ng-container *ngIf="motherData.uid === currentUserUid; else noPermission">
+  <ng-container *ngIf="motherData?.uid === currentUserUid; else noPermission">
     <button
       class="px-3 py-1 text-sm font-medium text-yellow-600 border border-yellow-300 rounded hover:bg-blue-100 transition"
       (click)="onEditRecord(i)">
