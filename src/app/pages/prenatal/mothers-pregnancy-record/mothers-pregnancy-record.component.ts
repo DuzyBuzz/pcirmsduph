@@ -50,36 +50,37 @@ spinnerMessage = '';
 
 
 
-  columns = [
-    { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
-    { key: 'aog', label: 'AOG', type: 'text', placeholder: 'e.g. 12 weeks' },
-    { key: 'bp', label: 'BP', type: 'text', placeholder: 'e.g. 120/80' },
-    { key: 'fh', label: 'FH', type: 'text', placeholder: 'e.g. 32cm' },
-    { key: 'fgb', label: 'FGB', type: 'text', placeholder: '' },
-    { key: 'wtPresIe', label: 'Wt/Pres/IE', type: 'text', placeholder: '' },
-    { key: 'mvtFa', label: 'MVT/FA', type: 'text', placeholder: '' },
-    { key: 'iron', label: 'Iron', type: 'text', placeholder: '' },
-    { key: 'calcium', label: 'Calcium', type: 'text', placeholder: '' },
-    { key: 'vitCMoringa', label: 'Vit C/Moringa', type: 'text', placeholder: '' },
-    { key: 'dydrogesterone', label: 'Dydrogesterone', type: 'text', placeholder: '' },
-    { key: 'progesterone', label: 'Progesterone', type: 'text', placeholder: '' },
-    { key: 'isoxsuprine', label: 'Isoxsuprine', type: 'text', placeholder: '' },
-    { key: 'milkOthers', label: 'Milk/Others', type: 'text', placeholder: '' },
-    { key: 'coMgt', label: 'Co-Mgt', type: 'text', placeholder: '' },
-    { key: 'ttTd', label: 'TT/TD', type: 'text', placeholder: '' },
-    { key: 'tdap', label: 'TDAP (27-36w)', type: 'text', placeholder: '' },
-    { key: 'spt', label: 'SPT', type: 'text', placeholder: '' },
-    { key: 'bloodRh', label: 'Blood & Rh', type: 'text', placeholder: '' },
-    { key: 'rpr', label: 'RPR', type: 'text', placeholder: '' },
-    { key: 'hbsag', label: 'HBsAG', type: 'text', placeholder: '' },
-    { key: 'cbc', label: 'CBC', type: 'text', placeholder: '' },
-    { key: 'urinalysis', label: 'Urinalysis', type: 'text', placeholder: '' },
-    { key: 'fbs', label: 'FBS/75 OGTT', type: 'text', placeholder: '' },
-    { key: 'rbs', label: 'RBS', type: 'text', placeholder: '' },
-    { key: 'ultrasound', label: 'Ultrasound', type: 'text', placeholder: '' },
-    { key: 'otherLabs', label: 'Other Labs', type: 'text', placeholder: '' },
-    { key: 'followUp', label: 'Follow Up', type: 'date', placeholder: '' },
-  ];
+columns = [
+  { key: 'date', label: 'Date', type: 'date', placeholder: 'e.g. 2025-04-12', error: 'Invalid date', readonly: true },
+  { key: 'aog', label: 'AOG', type: 'text', placeholder: 'e.g. 12 weeks' },
+  { key: 'bp', label: 'BP', type: 'text', placeholder: 'e.g. 120/80' },
+  { key: 'fh', label: 'FH', type: 'text', placeholder: 'e.g. 32 cm' },
+  { key: 'fgb', label: 'FGB', type: 'text', placeholder: 'e.g. 10 mg' },
+  { key: 'wtPresIe', label: 'Wt/Pres/IE', type: 'text', placeholder: 'e.g. 60 kg / 100/70 mmHg / 18 weeks' },
+  { key: 'mvtFa', label: 'MVT/FA', type: 'text', placeholder: 'e.g. 2 tablets' },
+  { key: 'iron', label: 'Iron', type: 'text', placeholder: 'e.g. 30 mg' },
+  { key: 'calcium', label: 'Calcium', type: 'text', placeholder: 'e.g. 500 mg' },
+  { key: 'vitCMoringa', label: 'Vit C/Moringa', type: 'text', placeholder: 'e.g. 1 capsule' },
+  { key: 'dydrogesterone', label: 'Dydrogesterone', type: 'text', placeholder: 'e.g. 10 mg' },
+  { key: 'progesterone', label: 'Progesterone', type: 'text', placeholder: 'e.g. 200 mg' },
+  { key: 'isoxsuprine', label: 'Isoxsuprine', type: 'text', placeholder: 'e.g. 10 mg' },
+  { key: 'milkOthers', label: 'Milk/Others', type: 'text', placeholder: 'e.g. 1 cup / others: none' },
+  { key: 'coMgt', label: 'Co-Mgt', type: 'text', placeholder: 'e.g. Diabetic care' },
+  { key: 'ttTd', label: 'TT/TD', type: 'text', placeholder: 'e.g. 2nd dose' },
+  { key: 'tdap', label: 'TDAP (27-36w)', type: 'text', placeholder: 'e.g. 1 dose' },
+  { key: 'spt', label: 'SPT', type: 'text', placeholder: 'e.g. Positive' },
+  { key: 'bloodRh', label: 'Blood & Rh', type: 'text', placeholder: 'e.g. A+' },
+  { key: 'rpr', label: 'RPR', type: 'text', placeholder: 'e.g. Non-reactive' },
+  { key: 'hbsag', label: 'HBsAG', type: 'text', placeholder: 'e.g. Negative' },
+  { key: 'cbc', label: 'CBC', type: 'text', placeholder: 'e.g. Normal' },
+  { key: 'urinalysis', label: 'Urinalysis', type: 'text', placeholder: 'e.g. No abnormal findings' },
+  { key: 'fbs', label: 'FBS/75 OGTT', type: 'text', placeholder: 'e.g. 80 mg/dL / 120 mg/dL' },
+  { key: 'rbs', label: 'RBS', type: 'text', placeholder: 'e.g. 95 mg/dL' },
+  { key: 'ultrasound', label: 'Ultrasound', type: 'text', placeholder: 'e.g. Normal' },
+  { key: 'otherLabs', label: 'Other Labs', type: 'text', placeholder: 'e.g. No additional tests' },
+  { key: 'followUp', label: 'Follow Up', type: 'date', placeholder: '' },
+];
+
 
   constructor(
     private fb: FormBuilder,
@@ -352,6 +353,7 @@ spinnerMessage = '';
     this.selectedRecord = null;
     this.selectedRecordIndex = -1;
     this.confirmRecordDate = '';
+
   }
 
 
@@ -397,6 +399,7 @@ spinnerMessage = '';
             this.navigating = true;
             this.spinnerMessage = 'Recording...'
             this.successMessage = 'Record saved successfully!';
+            this.toggleSubmittedView();
             this.showConfirmationModal = false;
             setTimeout(() => this.successMessage = '', 7000);
           })

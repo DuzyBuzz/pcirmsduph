@@ -24,7 +24,7 @@ export class PrenatalEditRecordComponent implements OnInit {
 
   }
   columns = [
-    { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date' },
+    { key: 'date', label: 'Date', type: 'date', placeholder: '', error: 'Invalid date', readonly: true },
     { key: 'aog', label: 'AOG', type: 'text', placeholder: 'e.g. 12 weeks' },
     { key: 'bp', label: 'BP', type: 'text', placeholder: 'e.g. 120/80' },
     { key: 'fh', label: 'FH', type: 'text', placeholder: 'e.g. 32cm' },

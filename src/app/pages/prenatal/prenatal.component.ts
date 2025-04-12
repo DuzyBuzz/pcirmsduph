@@ -320,9 +320,8 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
 
     this.showDeleteModal = false;
     this.confirmName = '';
-    this.navigating = true;
-    this.spinnerMessage = 'Deleting Patient Record...';
-    
+
+
     setTimeout(() => {
       this.router.navigate(['/HCP/prenatal']).then(() => {
         this.navigating = false; // Reset after navigation completes
