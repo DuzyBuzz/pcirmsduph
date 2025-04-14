@@ -9,8 +9,19 @@ import { Component } from '@angular/core';
 export class LeftSidePanelComponent {
   mobileMenuOpen = false;
 
-  toggleMobileMenu() {
+  toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
+  onSwipeLeft(): void {
+    if (this.mobileMenuOpen) {
+      this.mobileMenuOpen = false;
+    }
+  }
+
+  onSwipeRight(): void {
+    if (!this.mobileMenuOpen) {
+      this.mobileMenuOpen = true;
+    }
+  }
 }

@@ -1,0 +1,265 @@
+<form (ngSubmit)="saveChild()" class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <!-- Child's Name -->
+    <div class="mb-6">
+      <label for="childName" class="block text-gray-700 font-semibold">Child's Name</label>
+      <input
+        [(ngModel)]="childForm.childName"
+        name="childName"
+        id="childName"
+        required
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Mother's Name -->
+    <div class="mb-6">
+      <label for="motherName" class="block text-gray-700 font-semibold">Mother's Name</label>
+      <input
+        [(ngModel)]="childForm.motherName"
+        name="motherName"
+        id="motherName"
+        required
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Mother's Education -->
+    <div class="mb-6">
+      <label for="motherEducation" class="block text-gray-700 font-semibold">Mother's Education</label>
+      <input
+        [(ngModel)]="childForm.motherEducation"
+        name="motherEducation"
+        id="motherEducation"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Mother's Occupation -->
+    <div class="mb-6">
+      <label for="motherOccupation" class="block text-gray-700 font-semibold">Mother's Occupation</label>
+      <input
+        [(ngModel)]="childForm.motherOccupation"
+        name="motherOccupation"
+        id="motherOccupation"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Father's Name -->
+    <div class="mb-6">
+      <label for="fatherName" class="block text-gray-700 font-semibold">Father's Name</label>
+      <input
+        [(ngModel)]="childForm.fatherName"
+        name="fatherName"
+        id="fatherName"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Father's Education -->
+    <div class="mb-6">
+      <label for="fatherEducation" class="block text-gray-700 font-semibold">Father's Education</label>
+      <input
+        [(ngModel)]="childForm.fatherEducation"
+        name="fatherEducation"
+        id="fatherEducation"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Father's Occupation -->
+    <div class="mb-6">
+      <label for="fatherOccupation" class="block text-gray-700 font-semibold">Father's Occupation</label>
+      <input
+        [(ngModel)]="childForm.fatherOccupation"
+        name="fatherOccupation"
+        id="fatherOccupation"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Number of Pregnancies -->
+    <div class="mb-6">
+      <label for="noOfPregnancies" class="block text-gray-700 font-semibold">Number of Pregnancies</label>
+      <input
+        [(ngModel)]="childForm.noOfPregnancies"
+        name="noOfPregnancies"
+        id="noOfPregnancies"
+        type="number"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="mb-6">
+      <label for="birthDate" class="block text-gray-700 font-semibold">Date of Birth</label>
+      <input
+        [(ngModel)]="childForm.birthDate"
+        name="birthDate"
+        id="birthDate"
+        type="date"
+        required
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Gestational Age -->
+    <div class="mb-6">
+      <label for="gestationalAge" class="block text-gray-700 font-semibold">Gestational Age</label>
+      <input
+        [(ngModel)]="childForm.gestationalAge"
+        name="gestationalAge"
+        id="gestationalAge"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Birth Type -->
+    <div class="mb-6">
+      <label for="birthType" class="block text-gray-700 font-semibold">Birth Type</label>
+      <select
+        [(ngModel)]="childForm.birthType"
+        name="birthType"
+        id="birthType"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      >
+        <option value="Normal">Normal</option>
+        <option value="Caesarean">Caesarean</option>
+      </select>
+    </div>
+
+    <!-- Birth Order -->
+    <div class="mb-6">
+      <label for="birthOrder" class="block text-gray-700 font-semibold">Birth Order</label>
+      <input
+        [(ngModel)]="childForm.birthOrder"
+        name="birthOrder"
+        id="birthOrder"
+        type="number"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Birth Weight -->
+    <div class="mb-6">
+      <label for="birthWeight" class="block text-gray-700 font-semibold">Birth Weight</label>
+      <input
+        [(ngModel)]="childForm.birthWeight"
+        name="birthWeight"
+        id="birthWeight"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Birth Length -->
+    <div class="mb-6">
+      <label for="birthLength" class="block text-gray-700 font-semibold">Birth Length</label>
+      <input
+        [(ngModel)]="childForm.birthLength"
+        name="birthLength"
+        id="birthLength"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Place of Delivery -->
+    <div class="mb-6">
+      <label for="placeOfDelivery" class="block text-gray-700 font-semibold">Place of Delivery</label>
+      <input
+        [(ngModel)]="childForm.placeOfDelivery"
+        name="placeOfDelivery"
+        id="placeOfDelivery"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Date of Birth Registration -->
+    <div class="mb-6">
+      <label for="dateOfBirthRegistration" class="block text-gray-700 font-semibold">Date of Birth Registration</label>
+      <input
+        [(ngModel)]="childForm.dateOfBirthRegistration"
+        name="dateOfBirthRegistration"
+        id="dateOfBirthRegistration"
+        type="date"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Birth Attendant -->
+    <div class="mb-6">
+      <label for="birthAttendant" class="block text-gray-700 font-semibold">Birth Attendant</label>
+      <input
+        [(ngModel)]="childForm.birthAttendant"
+        name="birthAttendant"
+        id="birthAttendant"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Gender -->
+    <div class="mb-6">
+      <label for="gender" class="block text-gray-700 font-semibold">Gender</label>
+      <input
+        [(ngModel)]="childForm.gender"
+        name="gender"
+        id="gender"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Immunization & Health Checks -->
+    <div class="mb-6">
+      <label for="newbornScreening" class="block text-gray-700 font-semibold">Newborn Screening</label>
+      <input
+        [(ngModel)]="childForm.newbornScreening"
+        name="newbornScreening"
+        id="newbornScreening"
+        type="checkbox"
+        class="mt-2"
+      />
+    </div>
+    <div class="mb-6">
+      <label for="bcg" class="block text-gray-700 font-semibold">BCG</label>
+      <input
+        [(ngModel)]="childForm.bcg"
+        name="bcg"
+        id="bcg"
+        type="checkbox"
+        class="mt-2"
+      />
+    </div>
+    <!-- Add similar checkbox fields for other immunizations (DPT, OPV, HepatitisB, etc.) -->
+
+    <!-- Guardian Name -->
+    <div class="mb-6">
+      <label for="guardianName" class="block text-gray-700 font-semibold">Guardian Name</label>
+      <input
+        [(ngModel)]="childForm.guardianName"
+        name="guardianName"
+        id="guardianName"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+    <!-- Guardian Contact -->
+    <div class="mb-6">
+      <label for="guardianContact" class="block text-gray-700 font-semibold">Guardian Contact</label>
+      <input
+        [(ngModel)]="childForm.guardianContact"
+        name="guardianContact"
+        id="guardianContact"
+        class="mt-2 w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition duration-300"
+      />
+    </div>
+
+  </div>
+
+  <!-- Submit Button -->
+  <button
+    type="submit"
+    class="mt-6 w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
+  >
+  </button>
+</form>

@@ -1,0 +1,210 @@
+<div class="flex-1 p-6 bg-slate-50 h-fit rounded-lg">
+  <!-- Mother's Info Form -->
+  <form
+    *ngIf="!showEmergency"
+    [formGroup]="motherForm"
+    class="space-y-6 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
+    novalidate
+  >
+    <h2 class="text-2xl font-bold text-blue-700 border-b border-blue-100 pb-2">Edit Mother's Information</h2>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Full Name</label>
+        <input
+          formControlName="name"
+          type="text"
+          [placeholder]="existingData?.name || 'Full Name'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Home Address</label>
+        <input
+          formControlName="homeAddress"
+          type="text"
+          [placeholder]="existingData?.homeAddress || 'Home Address'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Contact Number</label>
+        <input
+          formControlName="contactNumber"
+          type="tel"
+          [placeholder]="existingData?.contactNumber || '09XXXXXXXXX'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Age</label>
+        <input
+          formControlName="age"
+          type="number"
+          [placeholder]="existingData?.age || 'Age'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Gravida (G)</label>
+        <input
+          formControlName="g"
+          type="number"
+          [placeholder]="existingData?.g || 'Gravida (G)'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Para (P)</label>
+        <input
+          formControlName="p"
+          type="number"
+          [placeholder]="existingData?.p || 'Para (P)'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col md:col-span-2">
+        <label class="text-blue-600 font-medium mb-1">Medical History (Hx)</label>
+        <textarea
+          formControlName="hx"
+          rows="3"
+          [placeholder]="existingData?.hx || 'Medical history if any...'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200 resize-none"
+        ></textarea>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Last Menstruation Period (LMP)</label>
+        <input
+          formControlName="lmp"
+          type="date"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-blue-600 font-medium mb-1">Estimated Due Date</label>
+        <input
+          formControlName="dueDate"
+          type="date"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+
+      <div class="flex flex-col md:col-span-2">
+        <label class="text-blue-600 font-medium mb-1">Ultrasound Result</label>
+        <input
+          formControlName="ultrasound"
+          type="text"
+          [placeholder]="existingData?.ultrasound || 'Ultrasound result'"
+          class="px-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:outline-none border-blue-200"
+        />
+      </div>
+    </div>
+
+    <div class="text-center">
+<!-- Next button: Proceed to Emergency Info -->
+<button
+  type="button"
+  (click)="proceedToEmergency()"
+  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition disabled:opacity-50"
+  [disabled]="motherForm.invalid"
+>
+  Next: Emergency Info
+</button>
+
+
+    </div>
+  </form>
+
+  <!-- Emergency Info -->
+  <form
+    *ngIf="showEmergency"
+    [formGroup]="emergencyForm"
+    (ngSubmit)="proceedToEmergency()"
+    class="space-y-6 mt-10 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
+    novalidate
+  >
+    <h2 class="text-2xl font-bold text-red-600 border-b border-red-200 pb-2">
+      Emergency Information
+    </h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <ng-container *ngFor="let field of emergencyFields">
+        <div class="flex flex-col">
+          <label class="text-red-600 font-medium mb-1">{{ field.label }}</label>
+          <input
+            [formControlName]="field.name"
+            [placeholder]="existingData?.emergency?.[field.name] || ('Enter ' + field.label.toLowerCase())"
+            class="px-4 py-3 border border-red-200 rounded-xl shadow-sm focus:ring-2 focus:ring-red-300 focus:outline-none"
+          />
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="text-center flex justify-between mt-6">
+      <button type="button" class="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800" (click)="backToMotherForm()">Back</button>
+<!-- Save Changes button: Trigger the confirmation modal on click -->
+<button
+  type="button"
+  class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition disabled:opacity-50"
+  [disabled]="!atLeastOneEmergency()"
+  (click)="openFinalConfirmationModal()"
+>
+  Save Changes
+</button>
+
+    </div>
+  </form>
+
+<!-- Confirmation Modal -->
+<div
+*ngIf="showConfirmation"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-gray-700 bg-opacity-50"
+>
+  <div
+    class="bg-white p-6 rounded-xl shadow-xl w-full max-w-2xl mx-4"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 class="text-2xl font-bold text-green-600 mb-4">Confirm Changes</h3>
+
+    <div class="space-y-4">
+      <h4 class="font-semibold text-lg text-gray-700">Edited Prenatal Fields</h4>
+
+      <div
+        *ngFor="let change of changedFields"
+        class="flex justify-between border-b pb-2 text-sm md:text-base"
+      >
+        <span class="font-medium text-blue-600">{{ change.label }}</span>
+        <span class="text-gray-800">
+          <span class="text-red-500 font-semibold">{{ change.oldValue }}</span>
+          →
+          <span class="text-green-600 font-semibold">{{ change.newValue }}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <button
+        (click)="onCancel()"
+        class="px-6 py-2 bg-gray-300 text-gray-700 hover:bg-red-500 hover:text-white rounded-xl transition"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="confirmSave()"
+        class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 rounded-xl transition"
+      >
+        Confirm & Save
+      </button>
+    </div>
+  </div>
+</div>
+
+</div>

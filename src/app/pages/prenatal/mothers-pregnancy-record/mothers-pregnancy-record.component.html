@@ -1,0 +1,228 @@
+<!-- Patient Information Summary -->
+<div class="p-6 bg-gradient-to-r from-blue-50 to-sky-100 rounded-2xl shadow-lg mb-8 text-center">
+  <h2 class="text-xl font-bold text-blue-600 mb-6">Patient Information</h2>
+  <div *ngIf="loading" class="text-center text-blue-500">Loading...</div>
+  <div *ngIf="!loading && motherData">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-9 gap-6 text-sm text-gray-700 text-left max-w-7xl mx-auto">
+      <div><span class="font-semibold text-blue-500">Name:</span><br> {{ motherData?.name || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Home Address:</span><br> {{ motherData?.homeAddress || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Age:</span><br> {{ motherData?.age || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">G:</span><br> {{ motherData?.g || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">P:</span><br> {{ motherData?.p || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Hx:</span><br> {{ motherData?.hx || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">LMP:</span><br> {{ motherData?.lmp || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Ultrasound:</span><br> {{ motherData?.ultrasound || 'N/A' }}</div>
+      <div><span class="font-semibold text-blue-500">Contact Number:</span><br> {{ motherData?.contactNumber || 'N/A' }}</div>
+    </div>
+  </div>
+
+
+</div>
+<!-- Record Prenatal Container -->
+<div class="p-6 bg-white rounded-xl shadow-lg max-h-full">
+  <div class="flex justify-between items-center mb-4">
+
+    <h2 class="text-2xl font-semibold text-blue-600">
+      {{ showSubmittedRecords ? 'Submitted Records' : 'Record Prenatal' }}
+    </h2>
+
+    <!-- Toggle Button -->
+    <button
+      class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-xl shadow transition"
+      (click)="toggleSubmittedView()"
+    >
+      {{ showSubmittedRecords ? 'Prenatal Form' : 'Show Prenatal Records' }}
+    </button>
+  </div>
+
+<!-- FORM SECTION -->
+
+  <div *ngIf="!showSubmittedRecords" class="h-full p-4 bg-slate-50 rounded-xl">
+
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="p-4 mb-4 text-red-800 bg-red-50 border border-red-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
+      <span class="font-semibold">Error:</span> {{ error }}
+    </div>
+    <ng-container *ngIf="motherData?.uid === currentUserUid; else noPermission">
+
+    <!-- Pregnancy Form -->
+    <form [formGroup]="pregnancyForm" (ngSubmit)="openConfirmModal()" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let col of columns" class="flex flex-col">
+          <label [for]="col.key" class="text-sm font-medium text-gray-700 mb-1">{{ col.label }}</label>
+          <input
+            [type]="col.type"
+            [formControlName]="col.key"
+            [placeholder]="col.placeholder"
+            [id]="col.key"
+            [readonly]="col.readonly"
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+          />
+        </div>
+      </div>
+
+
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button
+          type="submit"
+          (click)="confirmAndSubmit()"
+          [disabled]="pregnancyForm.invalid"
+          class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition disabled:opacity-50"
+        >
+          Save Record
+        </button>
+      </div>
+    </form>
+</ng-container>
+  <!-- No Permission message -->
+  <ng-template #noPermission>
+    <span class="cursor-not-allowed px-6 py-3 text-sm font-medium text-red-700 border-2 border-red-500 rounded-lg bg-red-50 hover:bg-red-200 transition-colors duration-300">
+      You do not have permission to modify the record for {{motherData?.name}}.
+    </span>
+  </ng-template>
+  </div>
+
+
+
+<!-- Submitted Records Section -->
+<div *ngIf="showSubmittedRecords" class="mt-6">
+  <h3 class="text-lg font-semibold mb-2 text-blue-700"><span class="text-blue-800 text-2xl">{{motherData?.name}}'s </span>Prenatal Records </h3>
+<!-- Loading Message -->
+<div *ngIf="loading" class="text-center text-blue-600 font-medium mb-4">
+  Fetching patient prenatal records...
+</div>
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="p-4 mb-4 text-white bg-green-500 border border-green-300 rounded-xl shadow-sm flex items-center gap-2" role="alert">
+      <span class="font-semibold">Success!</span> {{ successMessage }}
+    </div>
+<!-- No Records Found -->
+<div *ngIf="noRecordsFound && !loading" class="text-center text-red-500 font-semibold mb-4">
+  No prenatal records found.
+</div>
+<ng-container *ngIf="motherData?.uid === currentUserUid; else noPermission">
+  <button
+  *ngIf="isRecordsLoaded && records && records.length > 0"
+  (click)="exportToExcel()"
+  class="px-5 py-2 rounded-xl mb-4 text-white bg-green-600 hover:bg-green-700 shadow-md transition-all duration-300 text-base font-semibold flex items-center gap-2"
+>
+  Export to Excel
+</button>
+
+<div *ngIf="!records || records.length === 0" class="text-center text-gray-600 font-medium py-4">
+  No prenatal records available.
+</div>
+</ng-container>
+
+<ng-template #noPermission>
+  <span
+    class="px-4 py-2 text-sm font-medium text-red-700 border border-red-400 rounded-lg bg-red-100 hover:bg-red-200 transition-colors duration-300"
+  >
+    No permission to export.
+  </span>
+</ng-template>
+<!-- Prenatal Records List -->
+<div *ngFor="let record of records; let i = index" class="bg-white shadow p-4 rounded-lg mb-3 border border-blue-100">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+    <div *ngFor="let col of columns">
+      <span class="text-gray-600 text-sm">{{ col.label }}:</span>
+      <div class="font-medium text-gray-800">{{ record[col.key] || '-' }}</div>
+    </div>
+  </div>
+
+
+<!-- Action buttons -->
+<div class="flex justify-end gap-3 mt-4">
+  <!-- Check if user has permission to edit or delete -->
+  <ng-container *ngIf="motherData?.uid === currentUserUid; else noPermission">
+    <button
+      class="px-3 py-1 text-sm font-medium text-yellow-600 border border-yellow-300 rounded hover:bg-blue-100 transition"
+      (click)="onEditRecord(i)">
+      Edit
+    </button>
+    <button
+    class="px-3 py-1 text-sm font-medium text-red-700 border border-red-300 rounded hover:bg-red-100 transition"
+    (click)="onDeleteRecord(i, record)">
+    Delete
+  </button>
+
+  </ng-container>
+
+  <!-- No Permission message -->
+  <ng-template #noPermission>
+    <span class="cursor-not-allowed px-5 py-2 text-sm font-medium text-red-600 border-2 border-red-400 rounded-lg bg-red-50 hover:bg-red-200 transition-colors duration-300">
+      Access is restricted to viewing only, as this patient is not assigned to you.
+    </span>
+  </ng-template>
+</div>
+
+  </div>
+</div>
+
+
+</div>
+<!-- Prenatal Record Delete Confirmation Modal -->
+<div *ngIf="showPrenatalDeleteModal" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center transition-opacity duration-300">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+    <h2 class="text-red-600 font-semibold text-lg mb-4">Confirm Deletion</h2>
+    <p class="mb-2">Please type the date of the prenatal record to confirm deletion:</p>
+
+    <input
+      type="text"
+      [(ngModel)]="confirmRecordDate"
+      [placeholder]="selectedRecord?.date"
+      class="w-full border border-gray-300 rounded p-2 mb-4 transition-all duration-300 ease-in-out"
+    />
+
+    <div class="flex justify-center gap-4">
+      <button (click)="closePrenatalDeleteModal()" class="px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-300">
+        Cancel
+      </button>
+      <button
+        (click)="deletePrenatalRecord()"
+        [disabled]="confirmRecordDate !== selectedRecord?.date"
+        class="px-6 py-2 rounded transition-colors duration-300"
+        [ngClass]="{
+          'bg-red-500 text-white hover:bg-red-600': confirmRecordDate === selectedRecord?.date,
+          'bg-red-200 text-red-600 cursor-not-allowed': confirmRecordDate !== selectedRecord?.date
+        }"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for PrenatalRecordEditForm -->
+<div
+  *ngIf="isModalOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 transition-opacity duration-300"
+  (click)="closeModal()"
+>
+  <div
+    class="bg-white p-8 rounded-xl shadow-lg max-w-4xl w-full relative transition-all duration-300"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- FIXED: Correct Angular input binding and moved class outside -->
+    <div class="block mt-6 overflow-y-auto">
+      <app-prenatal-edit-record
+        [recordId]="selectedRecord"
+        [motherId]="motherId"
+      ></app-prenatal-edit-record>
+    </div>
+
+    <!-- Close button -->
+    <button
+      (click)="closeModal()"
+      class="absolute top-2 right-2 text-xl text-gray-600 transition-all duration-300"
+    >
+      &times;
+    </button>
+  </div>
+  <app-spinnner
+[navigating]="navigating"
+[spinnerMessage]="spinnerMessage">
+
+</app-spinnner>
+</div>

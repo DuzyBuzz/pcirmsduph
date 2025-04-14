@@ -1,0 +1,23 @@
+<div class="p-6 w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md relative">
+  <button (click)="navigateToChildForm()" class="px-6 py-3 bg-blue-600 text-white rounded-md mb-6 hover:bg-blue-700 transition-colors duration-300">
+    Add Child
+  </button>
+
+  <!-- Modal Form for Adding/Editing Child -->
+
+  <!-- Children List -->
+  <div class="mt-8">
+      <h3 class="text-xl font-semibold text-gray-800">Children List</h3>
+      <ul class="mt-4 space-y-4">
+          <li *ngFor="let child of (children$ | async)">
+              <div class="flex justify-between items-center p-4 border-b">
+                  <span class="font-semibold text-gray-800">{{ child.childName }} - {{ child.birthDate | date }}</span>
+                  <div class="flex gap-4">
+                      <button (click)="editChild(child)" class="text-blue-600 hover:text-blue-800">Edit</button>
+                      <button (click)="deleteChild(child.id || '')" class="text-red-600 hover:text-red-800">Delete</button>
+                  </div>
+              </div>
+          </li>
+      </ul>
+  </div>
+</div>
