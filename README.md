@@ -1,79 +1,106 @@
-### **README.md**
-
-markdown
-# Web Based Prenatal and Child Immunization Record Management With SMS Notification
-
-This project is a **Web Based Prenatal and Child Immunization Record Management With SMS Notification** built using Angular, Firebase, and Tailwind CSS. This guide will walk you through cloning the repository, installing dependencies, and running the application locally.
-
-## Prerequisites
-
-Before proceeding, ensure you have the following installed:
-
-1. [Git](https://git-scm.com/) - Version Control System
-2. [Node.js and npm](https://nodejs.org/) - JavaScript runtime and package manager
-3. [Angular CLI](https://angular.io/cli) - Command Line Interface for Angular
-
-## Steps
-
-### 1. Clone the Repository
-
-Open your terminal (or Git Bash) and navigate to the folder where you want to clone the project.
-
-Run the following command to clone the project from GitHub:
-bash
-git clone https://github.com/DuzyBuzz/pcirmsduph.git
-### 2. Install Dependencies
-
-After cloning the project, navigate into the project directory:
-bash
-cd pcirmsduph
-Then, install all the dependencies specified in `package.json` by running:
-bash
-npm install
-This command will download and install all the required packages.
-
-### 3. Run the Application
-
-Once the dependencies are installed, start the Angular development server using:
-bash
-ng serve
-By default, the application will run on `http://localhost:4200/`. Open this URL in your browser to see the app in action.
-
-### 4. Additional Information
-
-- **To stop the development server**: Press `Ctrl + C` in the terminal.
 
 
 ---
 
-## Troubleshooting
+## 🍼 Web-Based Prenatal and Child Immunization Record Management with SMS Notification
 
-- **If you face any issues with dependencies or missing packages**:
-  1. Run `npm install` again.
-  2. Delete the `node_modules` folder and `package-lock.json` file, then run `npm install` again.
+This is a **Web-Based Prenatal and Child Immunization Record Management System** with integrated **SMS notification support**. It is built using **Angular**, **Firebase**, and **Tailwind CSS**.
 
-If you encounter any other errors, please refer to the official Angular documentation or feel free to reach out for assistance.
+This guide will help you clone the repository, install the required dependencies, and run the application locally.
+
+---
+
+## 🚀 Features
+
+- 👶 Prenatal record management  
+- 💉 Child immunization tracking  
+- 📩 SMS notifications (Twilio or Firebase integration)  
+- 🔐 Firebase Authentication  
+- 🎨 Clean, responsive UI using TailwindCSS
+
+---
+
+## 🛠️ Prerequisites
+
+Ensure the following tools are installed on your system:
+
+- 📦 [Node.js & npm](https://nodejs.org/)  
+- 🧰 [Angular CLI](https://angular.io/cli)  
+- 🔃 [Git](https://git-scm.com/)
+
+---
+
+## 📥 Installation Guide
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/DuzyBuzz/pcirmsduph.git
+```
+
+### 2. Navigate to the Project Folder
+
+```bash
+cd pcirmsduph
+```
+
+### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+This will install all required packages listed in `package.json`.
+
+---
+
+## ▶️ Running the Application
+
+After installing the dependencies, start the development server:
+
+```bash
+ng serve
+```
+
+The app will be available at: [http://localhost:4200](http://localhost:4200)
+
+To open automatically in your browser:
+
+```bash
+ng serve --open
+```
+
+---
+
+## 🧯 Troubleshooting
+
+- If you encounter dependency issues:
+  
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+- If the app doesn't start, make sure you're using the correct Node.js version (preferably Node 18 or later).
+
+---
+
+## 📌 Summary of Commands
+
+```bash
+# Clone the repo
+git clone https://github.com/DuzyBuzz/pcirmsduph.git
+
+# Enter the project folder
+cd pcirmsduph
+
+# Install dependencies
+npm install
+
+# Run the development server
+ng serve --open
+```
+
+---
 
 
-### Summary of Commands:
-
-1. **Clone the project**:
-   
-bash
-   git clone https://github.com/DuzyBuzz/pcirmsduph.git
-
-
-2. **Install dependencies**:
-   
-bash
-   cd pcirmsduph
-   npm install
-
-
-3. **Run the app**:
-   
-bash
-   git clone https://github.com/DuzyBuzz/pcirmsduph
-   cd pcirmsduph
-   npm install
-   ng serve --o
