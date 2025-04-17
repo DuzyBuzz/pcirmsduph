@@ -334,8 +334,11 @@ export class PrenatalComponent implements OnInit, OnDestroy, OnChanges {
       try {
         const ref = doc(this.firestore, 'mothers', this.selectedMother.id);
         await deleteDoc(ref);
-        alert('Mother record deleted successfully!');
+        this.navigating= true;
+        this.spinnerMessage = "Deleting Patient...";
         this.closeDeleteModal();
+        this.selectedMotherId = "";
+        this.router.navigate(['/HCP/prenatal']);
         this.loadMothers();
       } catch (error) {
         console.error('Error deleting mother:', error);

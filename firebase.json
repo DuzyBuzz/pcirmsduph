@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/pcirm",
+    "public": "dist/pcirm/browser",
     "ignore": [
       "firebase.json",
       "**/.*",

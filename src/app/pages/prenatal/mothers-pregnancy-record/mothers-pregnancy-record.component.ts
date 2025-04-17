@@ -144,7 +144,7 @@ columns = [
     ]);
     wsData.push([
       this.motherData.name,
-      this.motherData.address,
+      this.motherData.homeAddress,
       this.motherData.age,
       this.motherData.g,
       this.motherData.p,
@@ -370,13 +370,14 @@ columns = [
     this.showConfirmationModal = false;
   }
 
+
+
   confirmAndSubmit() {
     if (!this.motherId) {
       this.error = 'Mother ID is missing.';
       return;
     }
 
-    // Retrieve the logged-in user's UID from AuthService
     this.authService.getCurrentUserId().then(uid => {
       if (!uid) {
         this.error = 'User not logged in.';
@@ -384,32 +385,36 @@ columns = [
       }
 
       const formValue = this.pregnancyForm.value;
-      formValue.uid = uid; // Add the logged-in user's UID to the form data
+      formValue.uid = uid;
 
-      // Ensure motherId is not null before proceeding
-      if (this.motherId) {
-        // Proceed with adding the prenatal record to Firestore
-        this.mothersService.addPrenatalRecord(this.motherId, formValue)
-          .then((res) => {
-            this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
-            this.pregnancyForm.reset({
-              date: new Date().toISOString().split('T')[0]
-            });
-            this.error = null;
-            this.navigating = true;
-            this.spinnerMessage = 'Recording...'
-            this.successMessage = 'Record saved successfully!';
-            this.toggleSubmittedView();
-            this.showConfirmationModal = false;
-            setTimeout(() => this.successMessage = '', 7000);
-          })
-          .catch(error => {
-            console.error(error);
-            this.error = 'Failed to save the prenatal record.';
-          });
-      } else {
-        this.error = 'Mother ID is missing or invalid.';
+      // Check for duplicate date
+      const isDuplicate = this.records.some(record => record.date === formValue.date);
+      if (isDuplicate) {
+        this.error = `You have submitted a record for today ${formValue.date}.`;
+        return;
       }
+
+      // Proceed with saving if no duplicate
+      this.mothersService.addPrenatalRecord(this.motherId!, formValue)
+        .then((res) => {
+          this.records.push({ id: res.id, ...res.data }); // Include Firestore ID
+          this.pregnancyForm.reset({
+            date: new Date().toISOString().split('T')[0]
+          });
+          this.error = null;
+          this.navigating = true;
+          this.spinnerMessage = 'Recording...';
+          this.successMessage = 'Record saved successfully!';
+          this.toggleSubmittedView();
+          this.showConfirmationModal = false;
+          setTimeout(() => this.successMessage = '', 7000);
+        })
+        .catch(error => {
+          console.error(error);
+          this.error = 'Failed to save the prenatal record.';
+        });
     });
   }
+
+
 }

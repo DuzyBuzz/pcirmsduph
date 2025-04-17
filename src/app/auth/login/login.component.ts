@@ -31,9 +31,10 @@ export class LoginComponent {
         this.loading = false;
         const isComplete = await this.authService.isProfileComplete(user.uid);
         if (!isComplete) {
+          this.navigating = true;
           this.router.navigate(['/auth/setup-user']);
         } else {
-          
+
           this.navigating = true;
           this.redirectUser(user.email);
         }
@@ -53,10 +54,8 @@ export class LoginComponent {
     if (email === this.authService.getAdminEmail()) {
       this.router.navigate(['/admin']);
     } else {
-      setTimeout(() => {
-        this.router.navigate(['/HCP']);
-        this.navigating = false; // optional: cleanup if component remains loaded
-      }, 3000);
+      this.router.navigate(['/HCP']);
+      this.navigating = false;
     }
   }
 }
