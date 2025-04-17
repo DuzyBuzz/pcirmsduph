@@ -88,16 +88,13 @@ npm install
 ## 📌 Summary of Commands
 
 ```bash
-# Clone the repo
+
 git clone https://github.com/DuzyBuzz/pcirmsduph.git
 
-# Enter the project folder
 cd pcirmsduph
 
-# Install dependencies
 npm install
 
-# Run the development server
 ng serve --open
 ```
 
