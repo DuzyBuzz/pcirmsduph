@@ -6,6 +6,8 @@ import { ChildFormComponent } from '../pages/forms/child-form/child-form.compone
 import { PrenatalComponent } from '../pages/prenatal/prenatal.component';
 import { PrenatalFormComponent } from '../pages/forms/prenatal-form/prenatal-form.component';
 import { PrenatalEditFormComponent } from '../pages/forms/prenatal-edit-form/prenatal-edit-form.component';
+import { ImmunizationComponent } from '../pages/immunization/immunization.component';
+import { ImmunizationFormComponent } from '../pages/forms/immunization-form/immunization-form.component';
 
 
 export const usersRoutes: Routes = [
@@ -13,8 +15,10 @@ export const usersRoutes: Routes = [
     { path: '', redirectTo: 'appointments', pathMatch: 'full' },
     { path: 'appointments', component: AppointmentsComponent },
     { path: 'child-immunization', component: ChildrenComponent },
+    { path: 'immunization', component: ImmunizationComponent },
     { path: 'prenatal', component: PrenatalComponent },
     { path: 'child-form', component: ChildFormComponent },
+    { path: 'immunization-form', component: ImmunizationFormComponent },
     {path: 'prenatal-form', component: PrenatalFormComponent},
     { path: 'prenatal-edit-form/:id', component: PrenatalEditFormComponent }
 

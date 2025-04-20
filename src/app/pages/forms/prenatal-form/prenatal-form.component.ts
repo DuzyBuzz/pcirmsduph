@@ -5,11 +5,12 @@ import { Firestore, collection, addDoc, collectionData, doc, getDoc, query, wher
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { SpinnnerComponent } from '../../../shared/core/spinnner/spinnner.component';
+import { BusinessAddressMapComponent } from '../../../shared/core/business-address-map/business-address-map.component';
 
 @Component({
   selector: 'app-prenatal-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,SpinnnerComponent],
+  imports: [CommonModule, ReactiveFormsModule,SpinnnerComponent, BusinessAddressMapComponent],
   templateUrl: './prenatal-form.component.html',
 })
 export class PrenatalFormComponent implements OnInit {
@@ -25,7 +26,7 @@ export class PrenatalFormComponent implements OnInit {
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
   mothers: any[] = [];
-
+  showMapModal = false;
   emergencyFields = [
     { name: 'spouseName', label: 'Spouse Name', type: 'text' },
     { name: 'spouseContact', label: 'Spouse Contact Number', type: 'tel' },
@@ -40,7 +41,7 @@ export class PrenatalFormComponent implements OnInit {
   ngOnInit(): void {
     this.motherForm = this.fb.group({
       name: ['', Validators.required],
-      homeAddress: ['', Validators.required],
+      homeAddress: [''],
       contactNumber: ['', Validators.required],
       age: ['', Validators.required],
       g: ['', Validators.required],
@@ -66,6 +67,21 @@ export class PrenatalFormComponent implements OnInit {
   isInvalid(form: FormGroup, field: string): boolean {
     const control = form.get(field);
     return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+  openMapModal() {
+    this.showMapModal = true;
+  }
+  closeMapModal() {
+    this.showMapModal = false;
+  }
+
+  /**
+   * Sets the selected address from the map modal.
+   * @param address Address returned from the child map component.
+   */
+  setAddress(address: string) {
+    this.motherForm.patchValue({ homeAddress: address });
+    this.closeMapModal();
   }
 
   openMotherConfirmationModal(): void {
@@ -189,13 +205,13 @@ export class PrenatalFormComponent implements OnInit {
 
     this.navigating = true;
     this.spinnerMessage = 'Saving Patient Information...';
-    
+
     setTimeout(() => {
       this.router.navigate(['/HCP/prenatal']).then(() => {
         this.navigating = false; // Reset after navigation completes
       });
     }, 4000);
-    
+
   }
   proceedToEmergency(): void {
     if (this.motherForm.invalid) {

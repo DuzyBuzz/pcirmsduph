@@ -131,7 +131,7 @@ export class ChildrenComponent implements OnInit {
     };
   }
   navigateToChildForm() {
-    this.router.navigate(['/ob-gyne/child-form']);
+    this.router.navigate(['/HCP/child-form']);
   }
   saveChild() {
     const currentUser = this.authService.getCurrentUser();

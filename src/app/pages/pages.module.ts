@@ -14,6 +14,7 @@ import { MothersPregnancyRecordComponent } from "./prenatal/mothers-pregnancy-re
 import { PrenatalEditFormComponent } from "./forms/prenatal-edit-form/prenatal-edit-form.component";
 import { SpinnnerComponent } from '../shared/core/spinnner/spinnner.component';
 import { SharedModule } from '../shared/shared.module';
+import { ImmunizationComponent } from './immunization/immunization.component';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import { SharedModule } from '../shared/shared.module';
     ChildrenComponent,
     ChildFormComponent,
     PrenatalComponent,
+    ImmunizationComponent
 
   ],
   imports: [
@@ -44,6 +46,7 @@ import { SharedModule } from '../shared/shared.module';
     ChildrenComponent,
     ChildFormComponent,
     PrenatalComponent,
+    ImmunizationComponent
 
   ],
 })

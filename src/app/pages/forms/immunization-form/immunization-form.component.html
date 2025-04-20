@@ -1,0 +1,91 @@
+<div class="flex-1 p-6 bg-slate-50 h-fit rounded-lg">
+  <form
+    [formGroup]="immunizationForm"
+    (ngSubmit)="submitForm()"
+    class="space-y-6 bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto"
+    novalidate
+  >
+    <h2 class="text-2xl font-bold text-blue-700 text-center border-b border-blue-100 pb-2">
+      Child Immunization Form
+    </h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Form Fields with validation error display -->
+      <ng-container *ngFor="let field of [
+        { name: 'childName', label: 'Child\'s Name', type: 'text' },
+        { name: 'gender', label: 'Gender', type: 'select' },
+        { name: 'dob', label: 'Date of Birth', type: 'date' },
+        { name: 'address', label: 'Address', type: 'text' },
+        { name: 'birthWeight', label: 'Birth Weight (kg)', type: 'number', step: '0.01' },
+        { name: 'birthLength', label: 'Birth Length (cm)', type: 'number', step: '0.1' },
+        { name: 'birthHeadCircumference', label: 'Head Circumference (cm)', type: 'number', step: '0.1' }
+      ]">
+        <div class="flex flex-col">
+          <label class="text-blue-600 font-medium mb-1">{{ field.label }}</label>
+
+          <ng-container [ngSwitch]="field.type">
+            <select
+              *ngSwitchCase="'select'"
+              [formControlName]="field.name"
+              class="px-4 py-3 border border-blue-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="" disabled selected>Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+
+            <input
+              *ngSwitchDefault
+              [type]="field.type"
+              [formControlName]="field.name"
+              [step]="field.step || null"
+              class="px-4 py-3 border border-blue-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-400"
+            />
+          </ng-container>
+
+          <small *ngIf="isInvalid(field.name)" class="text-red-500 text-sm mt-1">
+            {{ getErrorMessage(field.name) }}
+          </small>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Parent Info -->
+    <h3 class="text-lg font-semibold text-blue-600 mt-8 border-b border-blue-100 pb-2">
+      Parent Information
+    </h3>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-4">
+      <ng-container *ngFor="let parentField of [
+        { name: 'motherName', label: 'Mother\'s Name', type: 'text' },
+        { name: 'fatherName', label: 'Father\'s Name', type: 'text' },
+        { name: 'motherContact', label: 'Mother\'s Contact Number', type: 'tel' },
+        { name: 'fatherContact', label: 'Father\'s Contact Number', type: 'tel' }
+      ]">
+        <div class="flex flex-col">
+          <label class="text-blue-600 font-medium mb-1">{{ parentField.label }}</label>
+          <input
+            [formControlName]="parentField.name"
+            [type]="parentField.type"
+            placeholder="e.g. 09123456789"
+            class="px-4 py-3 border border-blue-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <small *ngIf="isInvalid(parentField.name)" class="text-red-500 text-sm mt-1">
+            {{ getErrorMessage(parentField.name) }}
+          </small>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="text-center mt-6">
+      <button
+        type="submit"
+        [disabled]="immunizationForm.invalid || isSubmitting"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition duration-300 disabled:opacity-50"
+      >
+        {{ isSubmitting ? 'Saving...' : 'Submit' }}
+      </button>
+    </div>
+  </form>
+</div>
